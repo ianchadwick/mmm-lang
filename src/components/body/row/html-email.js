@@ -2,7 +2,7 @@
 import cssParser, { findAndReplaceUnits } from 'css-math/lib/parser';
 import parser  from './index';
 import wrapper from '../../wrapper';
-import { getAttribute } from '../../../helpers/element';
+import styleHelper from './styleHelper';
 
 const applyBorder = (innerHtml, contentWidth, spacing, spacingWidth, spacingColor, widthHtml) => {
   if (['outside', 'both'].indexOf(spacing) === -1) {
@@ -109,12 +109,13 @@ export const getCalculatedAttributes = (attributes) => {
  * @param attributes
  * @return
  */
-export const render = (attributes) => {
+export const render = (attributes, { template, dom }) => {
   const {
     calcWidth,
     children,
     contentWidth,
     contentInnerWidth,
+    maxWidth,
     mobileBreakpoint,
     mobileWidth,
     mobileSpaceWidth,
@@ -125,13 +126,23 @@ export const render = (attributes) => {
     width,
   } = getCalculatedAttributes(attributes);
 
+  const { getElementAttribute } = dom;
+  const className = `layout-${contentWidth}`;
+
+  const styleWidths = [
+    contentWidth,
+  ];
+
   // get the min width of the table
-  const widthHtml = `max-width: ${contentWidth}; min-width: ${minWidth}; width: ${mobileWidth}; width: ${calcWidth};`;
-  const tableWidth = findAndReplaceUnits(contentInnerWidth).value;
+  const widthHtml = `max-width: ${maxWidth}; min-width: ${minWidth}; width: ${mobileWidth}; width: ${calcWidth};`;
+  const tableWidth = findAndReplaceUnits(contentWidth).value;
 
   const innerHtml = children.map((child, key) => {
-    const styleWidth = findAndReplaceUnits(getAttribute(child, 'width')).value;
-    const background = getAttribute(child, 'background', 'transparent');
+    const styleWidth = findAndReplaceUnits(getElementAttribute(child, 'width')).value;
+    const background = getElementAttribute(child, 'background', 'transparent');
+
+    // add the width so we can add classes later
+    styleWidths.push(getElementAttribute(child, 'width'));
 
     return applyInsideBorder(`<td class="column" valign="top" width="${styleWidth}" bgcolor="${background}">
             <![endif]-->
@@ -141,59 +152,27 @@ export const render = (attributes) => {
   });
 
   const innerContent = applyBorder(`<!--[if (mso)|(IE)]>
-        <table class="layout" cellpadding="0" cellspacing="0" align="center" bgcolor="#ffffff" width="${tableWidth}">
+        <table class="${className}" cellpadding="0" cellspacing="0" align="center" bgcolor="#ffffff" width="${tableWidth}">
           <tr>
             ${innerHtml.join('')}
           </tr>
         </table>
       <![endif]-->`, contentWidth, spacing, spacingWidth, spacingColor, widthHtml);
 
-  return `<div class="layout" style="background-color: #ffffff; display: table; Margin: 0 auto; ${widthHtml}">
+  // add the style widths to the stylesheet
+  template.getStyles().addHelper('mmm-row', styleHelper(mobileBreakpoint), [contentWidth]);
+
+  const classes = [
+    className,
+  ];
+
+  if (typeof attributes.class === 'string') {
+    classes.push(attributes.class);
+  }
+
+  return `<div class="${classes.join(' ')}" style="background-color: #ffffff; display: table; Margin: 0 auto; ${widthHtml}">
       ${innerContent}
     </div>`;
 };
 
 export default wrapper(parser, render);
-
-
-/*
-<div class="layout" style="background-color: #ffffff; display: table; Margin: 0 auto; max-width: 600px; min-width: 320px; width: 320px; width: calc(28000% - 173000px);">
-  <!--[if (mso)|(IE)]>
-  <table class="layout" cellpadding="0" cellspacing="0" align="center" bgcolor="#ffffff">
-    <tr>
-      <td class="column" valign="top" style="width: 300px; background: red">
-        <![endif]-->
-        <div class="column" style="background-color: red; vertical-align: top; font-family: sans-serif; min-width: 300px; max-width: 320px; width: 320px; width: calc(12300px - 2000%);">
-          <table width="100%" cellpadding="15" cellspacing="0" style="border-collapse: collapse; margin: 0px; padding: 15px; border: 0px;">
-            <tbody>
-            <tr>
-              <td width="100%" style="padding: 15px">
-                Simple with a background color, 15px padding, no border
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!--[if (mso)|(IE)]>
-      </td>
-      <td class="column" valign="top" style="width: 300px; background: green;">
-        <![endif]-->
-        <div class="column" style="background-color: green; vertical-align: top; font-family: sans-serif; min-width: 300px; max-width: 320px; width: 320px; width: calc(12300px - 2000%);">
-          <table width="100%" cellpadding="15" cellspacing="0" style="border-collapse: collapse; margin: 0px; padding: 15px; border: 0px;">
-            <tbody>
-            <tr>
-              <td width="100%" style="padding: 15px">
-                Simple with a background color, 15px padding, no border
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
-        <!--[if (mso)|(IE)]>
-      </td>
-    </tr>
-  </table>
-  <![endif]-->
-</div>
-*/

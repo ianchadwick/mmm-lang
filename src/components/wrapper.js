@@ -1,3 +1,4 @@
+
 /**
  * Wrap the method with the base parser
  *
@@ -5,8 +6,12 @@
  * @returns {function(*=, *=, *=)}
  */
 export default (base, callback) => {
-  const wrappedCallback = (template, attributes, children) => {
-    return callback(base(template, attributes, children));
+  const wrappedCallback = (attributes, children, options = {}) => {
+    // parse the component
+    const parsed = base(attributes, children, options);
+
+    // create the view
+    return callback(parsed, options);
   };
 
   wrappedCallback.tag = base.tag;

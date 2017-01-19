@@ -27,3 +27,14 @@ export const selectors = {
   head: `${tagRoot} > ${tagRoot}-head`,
   body: `${tagRoot} > ${tagRoot}-body`,
 };
+
+/**
+ * Default styles
+ *
+ * @type {{mobileBreakpoint: string}}
+ */
+export const styles = {
+  contentWidth: '600px',
+  mobileBreakpoint: '620px',
+  mobileWidth: '320px',
+};

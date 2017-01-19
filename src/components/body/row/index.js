@@ -1,6 +1,8 @@
 
 import { fraction, max, min, parser } from 'css-math';
 import get from 'lodash/get';
+import forEach from 'lodash/forEach';
+import { styles as defaultStyles } from '../../../config';
 
 /**
  * Get the columns from the supplied children. This essentially discards any non tag node.
@@ -10,7 +12,10 @@ import get from 'lodash/get';
 const getColumns = (children) => {
   return children.filter((child, key) => {
     child.childrenPosition = key;
-    return (child.type === 'tag' && row.allowedChildren.indexOf(child.name) !== -1);
+    // child.setAttribute('childrenPosition', key);
+
+    const tagName = String(child.tagName).toLowerCase();
+    return (row.allowedChildren.indexOf(tagName) !== -1);
   });
 };
 
@@ -18,6 +23,7 @@ export const defaultAttributes = {
   backgroundColor: '',
   centerOnMobile: true,
   contentWidth: '', // style.contentWidth
+  padding: '0px',
   spacing: 'none', // [none, inside, outside, both]
   spacingColor: '',
   spacingWidth: '0px',
@@ -40,9 +46,10 @@ export const getDefaultAttributes = (attributes = {}) =>
  * @param contentWidth
  * @param mobileWidth
  * @param mobileBreakpoint
+ * @param padding
  * @return []
  */
-const calculateColumnWidths = (columns, contentWidth, mobileWidth, mobileBreakpoint) => {
+const calculateColumns = (columns, contentWidth, mobileWidth, mobileBreakpoint, padding) => {
   const total = columns.length;
   const defaultWidth = fraction(`1 / ${total}`, contentWidth);
 
@@ -56,12 +63,22 @@ const calculateColumnWidths = (columns, contentWidth, mobileWidth, mobileBreakpo
 
     const desktopWidth = columnWidth || defaultWidth;
     const minWidth = min([mobileWidth, desktopWidth]);
+    
+    const newAttributes = {
+      'width': desktopWidth,
+      'min-width': minWidth,
+      'max-width': max([mobileWidth, desktopWidth]),
+      'mobile-width': mobileWidth,
+      'calc-width': calc(desktopWidth, mobileWidth, mobileBreakpoint),
+    };
 
-    column.attribs.width = desktopWidth;
-    column.attribs.minWidth = minWidth;
-    column.attribs.maxWidth = max([mobileWidth, desktopWidth]);
-    column.attribs.mobileWidth = mobileWidth;
-    column.attribs.calcWidth = calc(desktopWidth, mobileWidth, mobileBreakpoint);
+    if (typeof column.getAttribute('padding') === 'undefined') {
+      // use the parent padding as none is set on the element
+      newAttributes.padding = padding;
+    }
+
+    // set the attributes
+    forEach(newAttributes, (value, name) => column.setAttribute(name, value));
 
     return column;
   });
@@ -106,6 +123,15 @@ export const getContentWidth = ({ contentWidth, columns, spacing, spacingWidth }
   return parser(`${contentWidth} - ${totalSpacing}`);
 };
 
+/**
+ * Calculate the width of the inner table (width - outside spacing)
+ *
+ * @param contentWidth
+ * @param columns
+ * @param spacing
+ * @param spacingWidth
+ * @returns {*}
+ */
 export const getContentInnerWidth = ({ contentWidth, columns, spacing, spacingWidth }) => {
   if (['outside', 'both'].indexOf(spacing) === -1) {
     contentWidth;
@@ -165,31 +191,27 @@ const calc = (desktopWidth, mobileWidth, mobileBreakpoint) => {
  * @param attributes
  * @param children
  */
-const row = (template, attributes, children) => {
+const row = (attributes, children, { template }) => {
   const columns = getColumns(children);
   const rowAttributes = Object.assign({}, getDefaultAttributes({
     columns: columns.length,
-    contentWidth: template.getVariable('style.contentWidth', '600px'),
-    maxWidth: template.getVariable('style.contentWidth', '600px'),
-    mobileWidth: template.getVariable('style.mobileWidth', '320px'),
-    mobileBreakpoint: template.getVariable('style.breakpoint.mobile', '620px'),
+    contentWidth: template.getVariable('style.contentWidth', defaultStyles.contentWidth),
+    maxWidth: template.getVariable('style.contentWidth', defaultStyles.contentWidth),
+    mobileWidth: template.getVariable('style.mobileWidth', defaultStyles.mobileWidth),
+    mobileBreakpoint: template.getVariable('style.breakpoint.mobile', defaultStyles.mobileBreakpoint),
   }), attributes);
 
   const contentWidth = getContentWidth(rowAttributes);
   const contentInnerWidth = getContentInnerWidth(rowAttributes);
   const mobileWidth = getMobileWidth(rowAttributes);
 
-  const childrenWithWidths = calculateColumnWidths(
+  const childrenWithWidths = calculateColumns(
     columns,
     contentWidth,
     mobileWidth,
     rowAttributes.mobileBreakpoint,
+    rowAttributes.padding
   );
-
-  // get the minWidth
-  const minWidth = childrenWithWidths.reduce((min, child) => {
-    return (min > child.attribs.width ? child.attribs.width : min);
-  }, contentWidth);
 
   // create the calc widths
   const calcWidth = calc(
@@ -202,6 +224,7 @@ const row = (template, attributes, children) => {
     calcWidth: calcWidth,
     children: childrenWithWidths,
     contentInnerWidth: contentInnerWidth,
+    maxWidth: max([rowAttributes.contentWidth, rowAttributes.mobileWidth]),
     minWidth: min([rowAttributes.contentWidth, rowAttributes.mobileWidth]),
     mobileSpaceWidth: mobileWidth,
   });

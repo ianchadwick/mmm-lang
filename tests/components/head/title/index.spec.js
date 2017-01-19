@@ -7,7 +7,7 @@ describe('parse the title', () => {
       data: 'Impending Cat-astrophe',
     }];
 
-    expect(title('', {}, children)).toEqual({
+    expect(title({}, children)).toEqual({
       title: 'Impending Cat-astrophe',
     });
   });

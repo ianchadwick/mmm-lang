@@ -45,13 +45,12 @@ const getProviderFont = (provider, name, attributes) => {
 /**
  * Parse the fonts
  *
- * @param template
  * @param attributes
- * @param children
+ * @returns {{url: string}}
  */
-const font = (template, attributes, children) => {
-  const { name, provider, subset, weight } = attributes;
-  let url = attributes.url;
+const font = (attributes) => {
+  let { url } = attributes;
+  const { name, provider } = attributes;
 
   if (!url && !provider) {
     console.log('<mmm-font> must provide either a url or the provider');

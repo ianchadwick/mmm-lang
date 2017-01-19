@@ -1,6 +1,7 @@
 
-import dot from '../helpers/dot';
 import forEach from 'lodash/forEach';
+import pickBy from 'lodash/pickBy';
+import dot from '../helpers/dot';
 
 export default class Variables {
   constructor(variables) {
@@ -83,6 +84,42 @@ export default class Variables {
     // couldn't find the key so return the default value
     return defaultValue;
   }
+
+  /**
+   * Filter the variables and return a list with the results
+   * 
+   * @param search
+   * @return Variables
+   */
+  filter = (search) => {
+    const filtered = pickBy(this.variables, (value, name) => {
+      return name.search(search) > -1;
+    });
+
+    return (new Variables()).fromJS(filtered);
+  };
+
+  /**
+   * Filter the variables by their prefix
+   *
+   * @param prefix
+   * @param keyDecorator
+   * @returns {*}
+   */
+  filterByPrefix = (prefix, keyDecorator = (key) => key) => {
+    const variables = {};
+
+    forEach(this.variables, (value, name) => {
+      const search = new RegExp(`^${prefix}.`, 'gi');
+
+      if (name.search(search) === 0) {
+        const suffix = keyDecorator(name.replace(search, ''));
+        variables[suffix] = value;
+      }
+    });
+
+    return variables;
+  };
 
   /**
    * Get the items as an object

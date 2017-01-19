@@ -1,14 +1,11 @@
 
-import trim from 'lodash/trim';
-
 /**
  * Parse the conditional
  *
- * @param template
  * @param attributes
  * @param children
  */
-const conditional = (template, attributes, children) => {
+const conditional = (attributes, children) => {
   return {
     query: attributes.query,
     children: children,

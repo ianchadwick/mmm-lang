@@ -2,6 +2,8 @@
 import Template from '../../../../src/template';
 import parser from '../../../../src/components/body/row';
 
+const template = new Template();
+
 const createColumnMock = (attributes = {}, children = []) => {
   return {
     name: 'mmm-column',
@@ -11,15 +13,24 @@ const createColumnMock = (attributes = {}, children = []) => {
   };
 };
 
-const template = new Template();
+const createParserMock = (columns = 1, attributes = {}) => {
+  const children = [];
+
+  switch (columns) {
+    case 3:
+      children.push(createColumnMock());
+    case 2:
+      children.push(createColumnMock());
+    case 1:
+      children.push(createColumnMock());
+  }
+
+  return parser(attributes, children, { template });
+};
 
 describe('parse the row', () => {
   it('should return the number of columns', () => {
-    const result = parser(template, {}, [
-      createColumnMock(),
-      createColumnMock(),
-      createColumnMock(),
-    ]);
+    const result = createParserMock(3);
 
     // parse and return the attributes
     expect(result.columns).toEqual(3);
@@ -33,9 +44,7 @@ describe('parse the row', () => {
    * Single column
    */
   it('should return a single column table', () => {
-    const result = parser(template, {}, [
-      createColumnMock(),
-    ]);
+    const result = createParserMock();
 
     expect(result.children.length).toEqual(1);
     expect(result.children[0].attribs.width).toEqual('600px');
@@ -49,10 +58,7 @@ describe('parse the row', () => {
    * Two columns
    */
   it('should return a two column table', () => {
-    const result = parser(template, {}, [
-      createColumnMock(),
-      createColumnMock(),
-    ]);
+    const result = createParserMock(2);
 
     expect(result.children.length).toEqual(2);
 
@@ -69,11 +75,7 @@ describe('parse the row', () => {
    * Three columns
    */
   it('should return a three column table', () => {
-    const result = parser(template, {}, [
-      createColumnMock(),
-      createColumnMock(),
-      createColumnMock(),
-    ]);
+    const result = createParserMock(3);
 
     expect(result.children.length).toEqual(3);
 
@@ -96,9 +98,7 @@ describe('parse the row', () => {
       spacingWidth: '12px',
     };
 
-    const result = parser(template, attributes, [
-      createColumnMock(),
-    ]);
+    const result = createParserMock(1, attributes);
 
     expect(result.contentWidth).toEqual('600px');
     expect(result.minWidth).toEqual('320px');
@@ -124,10 +124,7 @@ describe('parse the row', () => {
       spacingWidth: '12px',
     };
 
-    const result = parser(template, attributes, [
-      createColumnMock(),
-      createColumnMock(),
-    ]);
+    const result = createParserMock(2, attributes);
 
     expect(result.contentWidth).toEqual('600px');
     expect(result.minWidth).toEqual('320px');
@@ -156,9 +153,7 @@ describe('parse the row', () => {
       spacingWidth: '12px',
     };
 
-    const result = parser(template, attributes, [
-      createColumnMock(),
-    ]);
+    const result = createParserMock(1, attributes);
 
     expect(result.contentWidth).toEqual('600px');
     expect(result.minWidth).toEqual('320px');
@@ -184,10 +179,7 @@ describe('parse the row', () => {
       spacingWidth: '12px',
     };
 
-    const result = parser(template, attributes, [
-      createColumnMock(),
-      createColumnMock(),
-    ]);
+    const result = createParserMock(2, attributes);
 
     expect(result.contentWidth).toEqual('600px');
     expect(result.minWidth).toEqual('320px');
@@ -216,9 +208,7 @@ describe('parse the row', () => {
       spacingWidth: '12px',
     };
 
-    const result = parser(template, attributes, [
-      createColumnMock(),
-    ]);
+    const result = createParserMock(1, attributes);
 
     expect(result.contentWidth).toEqual('600px');
     expect(result.minWidth).toEqual('320px');
@@ -244,10 +234,7 @@ describe('parse the row', () => {
       spacingWidth: '12px',
     };
 
-    const result = parser(template, attributes, [
-      createColumnMock(),
-      createColumnMock(),
-    ]);
+    const result = createParserMock(2, attributes);
 
     expect(result.contentWidth).toEqual('600px');
     expect(result.minWidth).toEqual('320px');
@@ -276,11 +263,7 @@ describe('parse the row', () => {
       spacingWidth: '12px',
     };
 
-    const result = parser(template, attributes, [
-      createColumnMock(),
-      createColumnMock(),
-      createColumnMock(),
-    ]);
+    const result = createParserMock(3, attributes);
 
     expect(result.contentWidth).toEqual('600px');
     expect(result.minWidth).toEqual('320px');

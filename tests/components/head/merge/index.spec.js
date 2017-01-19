@@ -11,7 +11,7 @@ describe('parse the merge tags', () => {
     };
 
     // parse and add the attributes to the template
-    merge(template, attributes, []);
+    merge(attributes, [], { template });
 
     expect(template.getVariables().toJS()).toEqual({
       title: 'Impending Cat-astrophe',

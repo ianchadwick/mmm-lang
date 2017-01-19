@@ -14,8 +14,11 @@
     "test": "tests"
   },
   "scripts": {
+    "build": "npm run clean && webpack",
+    "clean": "rimraf dist",
     "compile": "babel -d lib/ src/",
     "lint": "eslint",
+    "server": "webpack-dev-server",
     "test": "jest",
     "test:watch": "npm test -- --watch"
   },
@@ -38,13 +41,20 @@
     "css-math": "^0.3.1",
     "jest": "^17.0.3",
     "jquery": "^3.1.1",
+    "js-base64": "^2.1.9",
     "jsdom": "^9.8.3",
     "lodash": "^4.17.2"
   },
   "devDependencies": {
+    "babel-loader": "^6.2.10",
+    "babel-preset-env": "^1.1.8",
     "eslint": "^3.10.2",
     "eslint-config-airbnb": "^13.0.0",
     "eslint-plugin-jsx-a11y": "^3.0.1",
-    "eslint-plugin-react": "^6.7.1"
+    "eslint-plugin-react": "^6.7.1",
+    "html-webpack-plugin": "^2.26.0",
+    "rimraf": "^2.5.4",
+    "webpack": "2.2.0-rc.7",
+    "webpack-dev-server": "2.2.0-rc.0"
   }
 }

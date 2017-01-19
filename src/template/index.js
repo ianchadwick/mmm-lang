@@ -1,5 +1,7 @@
 
+import camelCase from 'lodash/camelCase';
 import Variables from './variables';
+import Styles from './styles';
 
 export default class Template {
   /**
@@ -11,6 +13,7 @@ export default class Template {
     this.html = '';
     this.title = '';
     this.variables = new Variables();
+    this.styles = new Styles();
   }
 
   /**
@@ -72,6 +75,29 @@ export default class Template {
    * @return Variables
    */
   getVariables = () => this.variables;
+
+  /**
+   * Get the styles object
+   *
+   * @return Styles
+   */
+  getStyles = () => this.styles;
+
+  /**
+   * Get the default attributes for the component from the variables
+   *
+   * @param component
+   * @param defaultValues
+   * @return {{*}}
+   */
+  getAttributesForComponent = (component, defaultValues = {}) => {
+    if (component) {
+      const variables = this.variables.filterByPrefix(`style.${component}`, camelCase);
+      return Object.assign({}, variables, defaultValues);
+    }
+    
+    return defaultValues;
+  };
 
   /**
    * Set the HTML

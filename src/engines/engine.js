@@ -26,12 +26,21 @@ export default class Engine {
   getComponents = () => this.components;
 
   /**
+   * Get the component by it's tag name
    *
    * @param name
+   * @return Function|false
    */
-  getComponent = (name) => (
-    typeof this.components[name] === 'function' ? this.components[name] : noop
-  );
+  getComponentByTag = (name) => {
+    const nameLowercase = String(name).toLowerCase();
+    for (let i = 0; i < this.components.length; i += 1) {
+      if (this.components[i].tag === nameLowercase) {
+        return this.components[i];
+      }
+    }
+
+    return false;
+  };
 
   /**
    * Replace the element with the replacement item
@@ -41,6 +50,7 @@ export default class Engine {
    * @param replacement
    * @param template
    * @param children
+   * @return boolean
    */
   replaceComponent = ($doc, element, replacement, template, children = []) => {
     const childrenHtml = children.reduce((items, child) => {
@@ -60,9 +70,52 @@ export default class Engine {
     const options = {
       alwaysRemoveTags: false,
     };
-    
+
+    // parse the tag and return it's contents
+    const parsed = parser(replacement, variables, options);
+
     $doc(element).replaceWith(
-      $doc(parser(replacement, variables, options))
+      $doc(parsed)
+    );
+
+    // are there new tags to parse?
+    return parsed.search(/<mmm-[a-z]*/i) === 0;
+  };
+
+  /**
+   * Append the content to the $doc
+   * @param $doc
+   * @param element
+   * @param replacement
+   * @param template
+   * @param children
+   */
+  appendComponent = ($doc, element, replacement, template, children = []) => {
+    const parsed = this.parseComponent($doc, replacement, template, children);
+
+    $doc(element).append(
+      $doc(parsed)
     );
   };
+
+  /**
+   * Parse the component
+   *
+   * @param element
+   * @param template
+   * @param children
+   * @returns {string}
+   */
+  parseComponent = (element, template, children = []) => {
+    const variables = template.getVariables().cloneWith({
+      children,
+    });
+
+    const options = {
+      alwaysRemoveTags: false,
+    };
+
+    // parse the tag and return it's contents
+    return parser(element, variables, options);
+  }
 }

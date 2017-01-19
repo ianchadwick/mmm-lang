@@ -3,6 +3,10 @@ import parser from '../src/parser';
 import HtmlEmail from '../src/engines/html-email';
 import { basicTemplate } from './fixtures';
 
+// var jsdom = require("jsdom").jsdom;
+import { jsdom } from 'jsdom';
+import jQuery from 'jquery';
+
 describe('parse a basic template', () => {
   // render the template
   const template = parser(basicTemplate, new HtmlEmail());
@@ -17,5 +21,21 @@ describe('parse a basic template', () => {
 
   it('should parse the body section', () => {
     expect()
-  })
+  });
+
+  it('should create jquery', () => {
+    const config = {
+      parsingMode: 'xml',
+    };
+
+    const window = jsdom(basicTemplate, config).defaultView;
+    const $ = jQuery(window);
+
+    // fetch the entire document
+    // console.log(window.document.documentElement.outerHTML);
+
+    $('mmm').children().each((key, element) => {
+      console.log(element.tagName);
+    });
+  });
 });

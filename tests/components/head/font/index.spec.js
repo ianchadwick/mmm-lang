@@ -8,7 +8,7 @@ describe('parse the font and return the url', () => {
       provider: 'google',
     };
 
-    expect(font('', attributes, [])).toEqual({
+    expect(font(attributes, [])).toEqual({
       url: 'https://fonts.googleapis.com/css?family=Sans+Source+Pro',
     });
   });
@@ -20,7 +20,7 @@ describe('parse the font and return the url', () => {
       weight: '400,500',
     };
 
-    expect(font('', attributes, [])).toEqual({
+    expect(font(attributes, [])).toEqual({
       url: 'https://fonts.googleapis.com/css?family=Sans+Source+Pro:400,500',
     });
   });
@@ -32,7 +32,7 @@ describe('parse the font and return the url', () => {
       subset: 'latin-ext',
     };
 
-    expect(font('', attributes, [])).toEqual({
+    expect(font(attributes, [])).toEqual({
       url: 'https://fonts.googleapis.com/css?family=Sans+Source+Pro&amp;subset=latin-ext',
     });
   });

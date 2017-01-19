@@ -1,4 +1,6 @@
 
+import { styles as defaultStyles } from '../../../config';
+
 export const defaultAttributes = {
   backgroundColor: '',
   centerOnMobile: true,
@@ -18,12 +20,17 @@ export const getDefaultAttributes = (attributes = {}) =>
 /**
  * Parse the item
  *
- * @param template
  * @param attributes
  * @param children
+ * @param options
  */
-const column = (template, attributes, children) => {
-  return Object.assign({}, getDefaultAttributes(), attributes);
+const column = (attributes, children, { parentAttributes, template }) => {
+  const { backgroundColor } = parentAttributes;
+
+  return Object.assign({
+    children,
+    mobileBreakpoint: template.getVariable('style.breakpoint.mobile', defaultStyles.mobileBreakpoint),
+  }, getDefaultAttributes({ backgroundColor }), attributes);
 };
 
 // xml tag
@@ -31,5 +38,11 @@ column.tag = 'mmm-column';
 
 // Any children
 column.allowedChildren = [];
+
+// expose attributes
+column.exposeAttributes = [
+  'padding',
+  'width',
+];
 
 export default column;

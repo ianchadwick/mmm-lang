@@ -14,7 +14,7 @@ const defaultOptions = {
  */
 export default (template, variables, options = defaultOptions) => {
   let parseOptions = Object.assign({}, defaultOptions, options);
-
+  
   let newTemplate = template;
   const matches = newTemplate.split(/((?:%7B|\{){2}[a-z][a-z\.\-0-9]{2,50}(?:%7D|\}){2})/ig);
 
