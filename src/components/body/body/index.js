@@ -8,7 +8,7 @@ const body = (attributes, children) => {
   return Object.assign({
     'backgroundColor': '#ffffff',
     'class': '',
-    'padding': '12px',
+    'padding': '0px',
     'margin': '0px',
   }, attributes, {
     children,

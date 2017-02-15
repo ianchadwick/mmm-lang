@@ -1,21 +1,8 @@
 
-import { findAndReplaceUnits } from 'css-math/lib/parser';
 import parser from './index';
 import wrapper from '../../wrapper';
-
-/**
- * Get the table style
- *
- * @param styles
- * @returns {*}
- */
-const getTableStyle = (styles) => {
-  return Object.assign({
-    'border-collapse': 'collapse',
-    'margin': 0,
-    'border': 0,
-  }, styles);
-};
+import { getDropShadow, defaultTableAttributes } from '../../../helpers/style';
+import { mapAttributesToString } from '../../../helpers/attributesToString';
 
 /**
  * Parse the image tag
@@ -28,54 +15,70 @@ export const render = (attributes, { template }) => {
     align,
     backgroundColor,
     borderRadius,
+    boxShadow,
     className,
+    color,
+    fontFamily,
+    fontSize,
     innerHtml,
     margin,
     padding,
+    textAlign,
     width,
     wrapper,
   } = attributes;
 
-  const styles = template.getStyles();
-  const paddingValue = findAndReplaceUnits(padding).value;
-  const marginValue = findAndReplaceUnits(margin).value;
-  const widthValue = (width.search('%') !== -1 ? width : findAndReplaceUnits(width).value);
-
-  const style = {
-    table: getTableStyle({
-      'width': '100%',
-      'min-width': '100%',
-      'padding': margin,
+  const elementAttributes = mapAttributesToString({
+    table: defaultTableAttributes({
+      className: className('mmm-box'),
+      padding: margin,
+      width: '100%',
+      style: {
+        minWidth: '100%',
+      },
     }),
+
     td: {
-      'text-align': align,
-      'padding': margin,
+      align: align,
+      style: {
+        textAlign: align,
+        padding: margin,
+      }
     },
-    tableInner: getTableStyle({
-      'width': width,
-      'padding': padding,
-      'border-radius': borderRadius,
-      'background': backgroundColor,
+
+    tableInner: defaultTableAttributes({
+      align: align,
+      backgroundColor: backgroundColor,
+      padding: padding,
+      width: width,
+      style: {
+        borderRadius: borderRadius,
+        boxShadow: getDropShadow(boxShadow),
+        display: (width !== '100%' ? 'inline-table' : undefined),
+        minWidth: (width === '100%' ? width : undefined),
+      },
     }),
-  };
 
-  if (width === '100%') {
-    style.tableInner['min-width'] = '100%';
-  } else {
-    style.tableInner['display'] = 'inline-table';
-  }
+    tdInner: {
+      align: textAlign,
+      style: {
+        color: color,
+        fontFamily: fontFamily,
+        fontSize: fontSize,
+        padding: padding,
+        textAlign: textAlign,
+      }
+    },
+  });
 
-  const innerTable = wrapper(`<table cellpadding="${paddingValue}" cellspacing="0" width="${widthValue}" align="${align}"
-                bgcolor="${backgroundColor}" style="${styles.flatten(style.tableInner)}">
-                  <tr>
-                    <td style="padding: ${padding}">${innerHtml}</td>
-                  </tr>
-                </table>`);
-
-  return `<table data-tag="mmm-box" class="${className('mmm-box')}" cellpadding="${marginValue}" cellspacing="0" width="100%" style="${styles.flatten(style.table)}">
+  return `<table ${elementAttributes.table}>
             <tr>
-              <td align="${align}" style="${styles.flatten(style.td)}">
-                ${innerTable}
+              <td ${elementAttributes.td}>
+                ${wrapper(`<table ${elementAttributes.tableInner}>
+                  <tr>
+                    <td ${elementAttributes.tdInner}>${innerHtml}</td>
+                  </tr>
+                </table>`)}
               </td>
             </tr>
           </table>`;

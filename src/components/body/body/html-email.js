@@ -10,7 +10,7 @@ export const render = (attributes) => {
   return `<body class="${className}" bgcolor="${backgroundColor}" style="${style}">
   <div style="background-color: ${backgroundColor}">
     <!--[if gte mso 9]>
-    <v:background xmlns:v="urn:schemas-microsoft-com:vml" fill="t">
+    <v:background xmlns:v="urn:schemas-microsoft-com:vml" fill="true">
       <v:fill type="tile" src="" color="${backgroundColor}"/>
     </v:background>
     <![endif]-->

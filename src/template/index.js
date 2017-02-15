@@ -1,5 +1,6 @@
 
 import camelCase from 'lodash/camelCase';
+import mapValues from 'lodash/mapValues';
 import Variables from './variables';
 import Styles from './styles';
 
@@ -93,10 +94,46 @@ export default class Template {
   getAttributesForComponent = (component, defaultValues = {}) => {
     if (component) {
       const variables = this.variables.filterByPrefix(`style.${component}`, camelCase);
-      return Object.assign({}, variables, defaultValues);
+      return this.resolveObjectValues(Object.assign({}, variables, defaultValues));
     }
-    
-    return defaultValues;
+
+    return this.resolveObjectValues(defaultValues);
+  };
+
+  /**
+   * Resolve the object values
+   *
+   * @param values
+   * @return {{*}}
+   */
+  resolveObjectValues = (values) => {
+    return mapValues(values, (value) => {
+      return this.parse(value);
+    });
+  };
+
+  /**
+   * Parse the value for the variables
+   *
+   * @param value
+   * @return string
+   */
+  parse = (value) => {
+    if (typeof value !== 'string') {
+      return value;
+    }
+
+    // find all the {{variables}} in the template
+    const matches = value.split(/((?:%7B|\{){2}[a-z][a-z\.\-0-9]{2,50}(?:%7D|\}){2})/ig);
+
+    return matches.map((match, key) => {
+      if (key % 2) {
+        const tag = match.replace(/(%7B|%7D|\{|\})/gi, '');
+        return this.variables.get(`style.${tag}`, match);
+      }
+
+      return match;
+    }).join('');
   };
 
   /**

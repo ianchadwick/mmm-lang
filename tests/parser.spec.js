@@ -3,7 +3,6 @@ import parser from '../src/parser';
 import HtmlEmail from '../src/engines/html-email';
 import { basicTemplate } from './fixtures';
 
-// var jsdom = require("jsdom").jsdom;
 import { jsdom } from 'jsdom';
 import jQuery from 'jquery';
 
@@ -15,7 +14,7 @@ describe('parse a basic template', () => {
     expect(template.getVariables().toJS()).toEqual({
       'user.firstname': 'Ian',
       'user.email': 'support@mizmoz.com',
-      'styles.fontweight': '12',
+      'style.fontweight': '12',
     });
   });
 

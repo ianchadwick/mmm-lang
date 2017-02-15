@@ -15,15 +15,32 @@ export default class Engine {
    * Init with the components
    *
    * @param components
+   * @param transforms
    */
-  constructor(components) {
+  constructor(components = [], transforms = []) {
     this.components = components;
+    this.transforms = transforms;
   }
 
   /**
    * Get the components
    */
   getComponents = () => this.components;
+
+  /**
+   * Get the transforms
+   */
+  getTransforms = () => this.transforms;
+
+  /**
+   * Apply the transforms to the html
+   *
+   * @param html
+   * @return string
+   */
+  applyTransforms = ({ html }) => this.transforms.reduce((template, transform) => (
+    transform({ html: template })
+  ), html);
 
   /**
    * Get the component by it's tag name

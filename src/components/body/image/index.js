@@ -1,5 +1,23 @@
 
-import { parser } from 'css-math';
+import { getPaddingBox, parser } from 'css-math';
+
+export const defaultAttributes = {
+  align: 'center',
+  alt: '',
+  display: 'block',
+  height: 'auto',
+  padding: '0px',
+  src: '',
+  url: '',
+  mobileWidth: '',
+  width: '',
+  contentWidth: '',
+
+  // styling for the alt tag
+  color: '',
+  fontFamily: '',
+  fontSize: '',
+};
 
 /**
  * Get the widths
@@ -17,9 +35,12 @@ const getWidth = ({ mobileWidth, padding, width }) => {
     };
   }
 
+  // get the padding total width
+  const paddingWidth = getPaddingBox(padding).width;
+
   return {
-    mobileWidth: parser(`${mobileWidth} - (${padding} * 2)`),
-    width: parser(`${width} - (${padding} * 2)`),
+    mobileWidth: parser(`${mobileWidth} - ${paddingWidth}`),
+    width: parser(`${width} - ${paddingWidth}`),
   };
 };
 
@@ -33,19 +54,10 @@ const getWidth = ({ mobileWidth, padding, width }) => {
 const image = (attributes, children, { parentAttributes }) => {
   const { mobileWidth, width } = getWidth(parentAttributes);
 
-  return Object.assign({
-    align: 'center',
-    alt: '',
-    display: 'block',
-    height: 'auto',
-    padding: '0px',
-    src: '',
-    url: '',
+  return Object.assign({}, defaultAttributes, {
     mobileWidth: mobileWidth,
-    width: width,
-  }, attributes, {
-    children,
-  });
+    contentWidth: width,
+  }, attributes);
 };
 
 // xml tag

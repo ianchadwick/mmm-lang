@@ -2,7 +2,7 @@
 import cssParser, { findAndReplaceUnits } from 'css-math/lib/parser';
 import parser from './index';
 import wrapper from '../../wrapper';
-import box from '../box/html-email';
+import attributesToString from '../../../helpers/attributesToString';
 
 /**
  * Parse the button tag
@@ -76,38 +76,30 @@ export const render = (attributes, { template, parseComponent }) => {
     },
   });
 
-  const paddingValue = findAndReplaceUnits(padding).value;
-  const marginValue = findAndReplaceUnits(margin).value;
-  const widthValue = (width === 'auto' ? width : findAndReplaceUnits(width).value);
+  const elementAttributes = attributesToString({
+    href: url,
+    style: {
+      color: color,
+      textDecoration: 'none',
+    }
+  });
 
   return parseComponent('mmm-box', {
     'class': 'mmm-button',
     align,
     backgroundColor,
+    boxShadow,
+    color,
+    fontFamily,
+    fontSize,
     borderRadius,
     innerHtml: text,
+    textAlign: 'center',
     margin,
     padding,
     width,
-    wrapper: (html) => `<a href="${url}" style="color: ${color}; text-decoration: none; box-shadow: ${boxShadow}">${html}</a>`,
+    wrapper: (html) => `<a ${elementAttributes}>${html}</a>`,
   });
-
-  return `<table class="mmm-button" cellpadding="${marginValue}" cellspacing="0" width="100%" style="border-collapse: collapse; margin: 0px; padding: ${padding}; border: 0px; width: 100%;">
-  <tr>
-    <td align="${align}" style="text-align: ${align}">
-      <a href="${url}" style="text-decoration: none; box-shadow: ${boxShadow}">
-        <table cellpadding="${paddingValue}" cellspacing="0" align="center" bgcolor="${backgroundColor}" width="${widthValue}"
-          style="border-radius: ${borderRadius}; display: inline-table; border-collapse: collapse; margin: 0px; padding: ${padding}; border: 0px; width: ${width}; max-width: ${width};">
-          <tr>
-            <td style="color: ${color}; font-size: ${fontSize}; text-align: center">
-              ${text}
-            </td>
-          </tr>
-        </table>
-      </a>
-    </td>
-  </tr>
-</table>`;
 };
 
 /**

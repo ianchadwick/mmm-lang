@@ -17,7 +17,7 @@ export default (template, variables, options = defaultOptions) => {
   
   let newTemplate = template;
   const matches = newTemplate.split(/((?:%7B|\{){2}[a-z][a-z\.\-0-9]{2,50}(?:%7D|\}){2})/ig);
-
+  
   matches.forEach((match, key) => {
     if (key % 2) {
       const tag = match.replace(/(%7B|%7D|\{|\})/gi, '');

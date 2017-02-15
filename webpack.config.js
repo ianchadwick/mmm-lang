@@ -6,9 +6,12 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 const VENDOR_LIBS = [
   'css-math',
   'jquery',
+  'html-entities',
   'lodash/forEach',
+  'lodash/findKey',
   'lodash/pickBy',
   'lodash/camelCase',
+  'lodash/kebabCase',
   'lodash/trim',
   'lodash/get',
   'lodash/uniq',
@@ -22,7 +25,7 @@ const config = {
     vendor: VENDOR_LIBS,
   },
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'lib'),
     filename: '[name].[chunkhash].js'
   },
   module: {

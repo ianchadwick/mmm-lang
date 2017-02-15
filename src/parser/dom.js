@@ -58,6 +58,13 @@ class Dom {
   getWindow = () => this.window;
 
   /**
+   * Get the document
+   *
+   * @return Document
+   */
+  getDocument = () => this.window.document;
+
+  /**
    * Get the elements details
    *
    * @param element

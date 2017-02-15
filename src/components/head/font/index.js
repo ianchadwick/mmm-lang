@@ -1,3 +1,6 @@
+
+import { resolveProvider } from '../../../fonts';
+
 /**
  * Create the Google Fonts url
  *
@@ -12,10 +15,8 @@ const getGoogleFontUrl = (name, { weight, subset }) => {
   // add the family
   parts.push(name.replace(/ /g, '+'));
 
-  if (weight) {
-    // add the font weights
-    parts.push(`:${weight}`);
-  }
+  // add the font weights
+  parts.push(`:${(weight ? weight  : '200,400')}`);
 
   if (subset) {
     // add the subset of fonts to load
@@ -37,8 +38,11 @@ const getProviderFont = (provider, name, attributes) => {
   switch (provider) {
     case 'google':
       return getGoogleFontUrl(name, attributes);
+    case 'safe':
+      return '';
     default:
-      throw `Unknown font provider: ${provider}`;
+      // failed to find the provider
+      throw `Failed to resolve the font provider!`;
   }
 };
 
@@ -49,11 +53,15 @@ const getProviderFont = (provider, name, attributes) => {
  * @returns {{url: string}}
  */
 const font = (attributes) => {
-  let { url } = attributes;
-  const { name, provider } = attributes;
+  let { url, provider } = attributes;
+  const { name } = attributes;
+
+  if (!provider) {
+    provider = resolveProvider(name);
+  }
 
   if (!url && !provider) {
-    console.log('<mmm-font> must provide either a url or the provider');
+    console.warn('<mmm-font> must provide either a url or the provider');
   }
 
   if (provider) {

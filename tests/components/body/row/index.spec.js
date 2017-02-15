@@ -6,10 +6,11 @@ const template = new Template();
 
 const createColumnMock = (attributes = {}, children = []) => {
   return {
-    name: 'mmm-column',
-    type: 'tag',
+    tagName: 'mmm-column',
     children: children,
-    attribs: attributes,
+    attributes: attributes,
+    getAttribute: jest.fn(),
+    setAttribute: jest.fn(),
   };
 };
 
@@ -28,7 +29,7 @@ const createParserMock = (columns = 1, attributes = {}) => {
   return parser(attributes, children, { template });
 };
 
-describe('parse the row', () => {
+describe('Parsing the row component', () => {
   it('should return the number of columns', () => {
     const result = createParserMock(3);
 
@@ -46,12 +47,16 @@ describe('parse the row', () => {
   it('should return a single column table', () => {
     const result = createParserMock();
 
+    const firstChild = result.children[0];
+    const setAttribute = firstChild.setAttribute;
+
     expect(result.children.length).toEqual(1);
-    expect(result.children[0].attribs.width).toEqual('600px');
-    expect(result.children[0].attribs.minWidth).toEqual('320px');
-    expect(result.children[0].attribs.maxWidth).toEqual('600px');
-    expect(result.children[0].attribs.mobileWidth).toEqual('320px');
-    expect(result.children[0].attribs.calcWidth).toEqual('calc(28000% - 173000px)');
+    expect(setAttribute).toBeCalledWith('width', '600px');
+    expect(setAttribute).toBeCalledWith('min-width', '320px');
+    expect(setAttribute).toBeCalledWith('max-width', '600px');
+    expect(setAttribute).toBeCalledWith('mobile-width', '320px');
+    expect(setAttribute).toBeCalledWith('calc-width', 'calc(28000% - 173000px)');
+
   });
 
   /**
@@ -63,11 +68,12 @@ describe('parse the row', () => {
     expect(result.children.length).toEqual(2);
 
     for (let i = 0; i < 2; i += 1) {
-      expect(result.children[i].attribs.width).toEqual('300px');
-      expect(result.children[i].attribs.minWidth).toEqual('300px');
-      expect(result.children[i].attribs.maxWidth).toEqual('320px');
-      expect(result.children[0].attribs.mobileWidth).toEqual('320px');
-      expect(result.children[i].attribs.calcWidth).toEqual('calc(12700px - 2000%)');
+      const setAttribute = result.children[i].setAttribute;
+      expect(setAttribute).toBeCalledWith('width', '300px');
+      expect(setAttribute).toBeCalledWith('min-width', '300px');
+      expect(setAttribute).toBeCalledWith('max-width', '320px');
+      expect(setAttribute).toBeCalledWith('mobile-width', '320px');
+      expect(setAttribute).toBeCalledWith('calc-width', 'calc(12700px - 2000%)');
     }
   });
 
@@ -80,11 +86,12 @@ describe('parse the row', () => {
     expect(result.children.length).toEqual(3);
 
     for (let i = 0; i < 3; i += 1) {
-      expect(result.children[i].attribs.width).toEqual('200px');
-      expect(result.children[i].attribs.minWidth).toEqual('200px');
-      expect(result.children[i].attribs.maxWidth).toEqual('320px');
-      expect(result.children[0].attribs.mobileWidth).toEqual('320px');
-      expect(result.children[i].attribs.calcWidth).toEqual('calc(74600px - 12000%)');
+      const setAttribute = result.children[i].setAttribute;
+      expect(setAttribute).toBeCalledWith('width', '200px');
+      expect(setAttribute).toBeCalledWith('min-width', '200px');
+      expect(setAttribute).toBeCalledWith('max-width', '320px');
+      expect(setAttribute).toBeCalledWith('mobile-width', '320px');
+      expect(setAttribute).toBeCalledWith('calc-width', 'calc(74600px - 12000%)');
     }
   });
 
@@ -101,17 +108,19 @@ describe('parse the row', () => {
     const result = createParserMock(1, attributes);
 
     expect(result.contentWidth).toEqual('600px');
+    expect(result.contentInnerWidth).toEqual('576px');
     expect(result.minWidth).toEqual('320px');
     expect(result.maxWidth).toEqual('600px');
     expect(result.mobileWidth).toEqual('320px');
     expect(result.calcWidth).toEqual('calc(28000% - 173000px)');
-
     expect(result.children.length).toEqual(1);
-    expect(result.children[0].attribs.width).toEqual('576px');
-    expect(result.children[0].attribs.minWidth).toEqual('296px');
-    expect(result.children[0].attribs.maxWidth).toEqual('576px');
-    expect(result.children[0].attribs.mobileWidth).toEqual('296px');
-    expect(result.children[0].attribs.calcWidth).toEqual('calc(28000% - 173024px)');
+
+    const setAttribute = result.children[0].setAttribute;
+    expect(setAttribute).toBeCalledWith('width', '576px');
+    expect(setAttribute).toBeCalledWith('min-width', '296px');
+    expect(setAttribute).toBeCalledWith('max-width', '576px');
+    expect(setAttribute).toBeCalledWith('mobile-width', '296px');
+    expect(setAttribute).toBeCalledWith('calc-width', 'calc(28000% - 173024px)');
   });
 
   /**
@@ -127,6 +136,7 @@ describe('parse the row', () => {
     const result = createParserMock(2, attributes);
 
     expect(result.contentWidth).toEqual('600px');
+    expect(result.contentInnerWidth).toEqual('576px');
     expect(result.minWidth).toEqual('320px');
     expect(result.maxWidth).toEqual('600px');
     expect(result.mobileWidth).toEqual('320px');
@@ -135,11 +145,12 @@ describe('parse the row', () => {
     expect(result.children.length).toEqual(2);
 
     for (let i = 0; i < 2; i += 1) {
-      expect(result.children[i].attribs.width).toEqual('288px');
-      expect(result.children[i].attribs.minWidth).toEqual('288px');
-      expect(result.children[i].attribs.maxWidth).toEqual('296px');
-      expect(result.children[i].attribs.mobileWidth).toEqual('296px');
-      expect(result.children[i].attribs.calcWidth).toEqual('calc(5248px - 800%)');
+      const setAttribute = result.children[i].setAttribute;
+      expect(setAttribute).toBeCalledWith('width', '288px');
+      expect(setAttribute).toBeCalledWith('min-width', '288px');
+      expect(setAttribute).toBeCalledWith('max-width', '296px');
+      expect(setAttribute).toBeCalledWith('mobile-width', '296px');
+      expect(setAttribute).toBeCalledWith('calc-width', 'calc(5248px - 800%)');
     }
   });
 
@@ -156,17 +167,19 @@ describe('parse the row', () => {
     const result = createParserMock(1, attributes);
 
     expect(result.contentWidth).toEqual('600px');
+    expect(result.contentInnerWidth).toEqual('600px');
     expect(result.minWidth).toEqual('320px');
     expect(result.maxWidth).toEqual('600px');
     expect(result.mobileWidth).toEqual('320px');
     expect(result.calcWidth).toEqual('calc(28000% - 173000px)');
-
     expect(result.children.length).toEqual(1);
-    expect(result.children[0].attribs.width).toEqual('600px');
-    expect(result.children[0].attribs.minWidth).toEqual('320px');
-    expect(result.children[0].attribs.maxWidth).toEqual('600px');
-    expect(result.children[0].attribs.mobileWidth).toEqual('320px');
-    expect(result.children[0].attribs.calcWidth).toEqual('calc(28000% - 173000px)');
+
+    const setAttribute = result.children[0].setAttribute;
+    expect(setAttribute).toBeCalledWith('width', '600px');
+    expect(setAttribute).toBeCalledWith('min-width', '320px');
+    expect(setAttribute).toBeCalledWith('max-width', '600px');
+    expect(setAttribute).toBeCalledWith('mobile-width', '320px');
+    expect(setAttribute).toBeCalledWith('calc-width', 'calc(28000% - 173000px)');
   });
 
   /**
@@ -182,6 +195,7 @@ describe('parse the row', () => {
     const result = createParserMock(2, attributes);
 
     expect(result.contentWidth).toEqual('600px');
+    expect(result.contentInnerWidth).toEqual('600px');
     expect(result.minWidth).toEqual('320px');
     expect(result.maxWidth).toEqual('600px');
     expect(result.mobileWidth).toEqual('320px');
@@ -190,11 +204,12 @@ describe('parse the row', () => {
     expect(result.children.length).toEqual(2);
 
     for (let i = 0; i < 2; i += 1) {
-      expect(result.children[i].attribs.width).toEqual('294px');
-      expect(result.children[i].attribs.minWidth).toEqual('294px');
-      expect(result.children[i].attribs.maxWidth).toEqual('320px');
-      expect(result.children[i].attribs.mobileWidth).toEqual('320px');
-      expect(result.children[i].attribs.calcWidth).toEqual('calc(16414px - 2600%)');
+      const setAttribute = result.children[i].setAttribute;
+      expect(setAttribute).toBeCalledWith('width', '294px');
+      expect(setAttribute).toBeCalledWith('min-width', '294px');
+      expect(setAttribute).toBeCalledWith('max-width', '320px');
+      expect(setAttribute).toBeCalledWith('mobile-width', '320px');
+      expect(setAttribute).toBeCalledWith('calc-width', 'calc(16414px - 2600%)');
     }
   });
 
@@ -211,17 +226,19 @@ describe('parse the row', () => {
     const result = createParserMock(1, attributes);
 
     expect(result.contentWidth).toEqual('600px');
+    expect(result.contentInnerWidth).toEqual('576px');
     expect(result.minWidth).toEqual('320px');
     expect(result.maxWidth).toEqual('600px');
     expect(result.mobileWidth).toEqual('320px');
     expect(result.calcWidth).toEqual('calc(28000% - 173000px)');
-
     expect(result.children.length).toEqual(1);
-    expect(result.children[0].attribs.width).toEqual('576px');
-    expect(result.children[0].attribs.minWidth).toEqual('296px');
-    expect(result.children[0].attribs.maxWidth).toEqual('576px');
-    expect(result.children[0].attribs.mobileWidth).toEqual('296px');
-    expect(result.children[0].attribs.calcWidth).toEqual('calc(28000% - 173024px)');
+
+    const setAttribute = result.children[0].setAttribute;
+    expect(setAttribute).toBeCalledWith('width', '576px');
+    expect(setAttribute).toBeCalledWith('min-width', '296px');
+    expect(setAttribute).toBeCalledWith('max-width', '576px');
+    expect(setAttribute).toBeCalledWith('mobile-width', '296px');
+    expect(setAttribute).toBeCalledWith('calc-width', 'calc(28000% - 173024px)');
   });
 
   /**
@@ -237,19 +254,20 @@ describe('parse the row', () => {
     const result = createParserMock(2, attributes);
 
     expect(result.contentWidth).toEqual('600px');
+    expect(result.contentInnerWidth).toEqual('576px');
     expect(result.minWidth).toEqual('320px');
     expect(result.maxWidth).toEqual('600px');
     expect(result.mobileWidth).toEqual('320px');
     expect(result.calcWidth).toEqual('calc(28000% - 173000px)');
-
     expect(result.children.length).toEqual(2);
 
     for (let i = 0; i < 2; i += 1) {
-      expect(result.children[i].attribs.width).toEqual('282px');
-      expect(result.children[i].attribs.minWidth).toEqual('282px');
-      expect(result.children[i].attribs.maxWidth).toEqual('296px');
-      expect(result.children[i].attribs.mobileWidth).toEqual('296px');
-      expect(result.children[i].attribs.calcWidth).toEqual('calc(8962px - 1400%)');
+      const setAttribute = result.children[0].setAttribute;
+      expect(setAttribute).toBeCalledWith('width', '282px');
+      expect(setAttribute).toBeCalledWith('min-width', '282px');
+      expect(setAttribute).toBeCalledWith('max-width', '296px');
+      expect(setAttribute).toBeCalledWith('mobile-width', '296px');
+      expect(setAttribute).toBeCalledWith('calc-width', 'calc(8962px - 1400%)');
     }
   });
 
@@ -266,19 +284,20 @@ describe('parse the row', () => {
     const result = createParserMock(3, attributes);
 
     expect(result.contentWidth).toEqual('600px');
+    expect(result.contentInnerWidth).toEqual('576px');
     expect(result.minWidth).toEqual('320px');
     expect(result.maxWidth).toEqual('600px');
     expect(result.mobileWidth).toEqual('320px');
     expect(result.calcWidth).toEqual('calc(28000% - 173000px)');
-
     expect(result.children.length).toEqual(3);
 
     for (let i = 0; i < 3; i += 1) {
-      expect(result.children[i].attribs.width).toEqual('184px');
-      expect(result.children[i].attribs.minWidth).toEqual('184px');
-      expect(result.children[i].attribs.maxWidth).toEqual('296px');
-      expect(result.children[i].attribs.mobileWidth).toEqual('296px');
-      expect(result.children[i].attribs.calcWidth).toEqual('calc(69624px - 11200%)');
+      const setAttribute = result.children[0].setAttribute;
+      expect(setAttribute).toBeCalledWith('width', '184px');
+      expect(setAttribute).toBeCalledWith('min-width', '184px');
+      expect(setAttribute).toBeCalledWith('max-width', '296px');
+      expect(setAttribute).toBeCalledWith('mobile-width', '296px');
+      expect(setAttribute).toBeCalledWith('calc-width', 'calc(69624px - 11200%)');
     }
   });
 });

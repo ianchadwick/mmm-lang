@@ -1488,9 +1488,9 @@ crypto-browserify@^3.11.0:
     public-encrypt "^4.0.0"
     randombytes "^2.0.0"
 
-css-math@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/css-math/-/css-math-0.3.1.tgz#8e694992c04c6da1c50ff285bf981bd09b0f1342"
+css-math:
+  version "0.3.7"
+  resolved "https://registry.yarnpkg.com/css-math/-/css-math-0.3.7.tgz#b08c48e90dcd1dd8b8509b969d59ce3d00386525"
 
 css-select@^1.1.0, css-select@~1.2.0:
   version "1.2.0"
@@ -2338,6 +2338,10 @@ html-encoding-sniffer@^1.0.1:
   resolved "https://registry.yarnpkg.com/html-encoding-sniffer/-/html-encoding-sniffer-1.0.1.tgz#79bf7a785ea495fe66165e734153f363ff5437da"
   dependencies:
     whatwg-encoding "^1.0.1"
+
+html-entities:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/html-entities/-/html-entities-1.2.0.tgz#41948caf85ce82fed36e4e6a0ed371a6664379e2"
 
 html-minifier@^3.2.3:
   version "3.2.3"

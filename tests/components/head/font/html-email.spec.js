@@ -18,4 +18,12 @@ describe('render the font for email html', () => {
     />
     <!--<![endif]-->`);
   });
+
+  it('should return an empty string for safe fonts', () => {
+    const attributes = {
+      url: '',
+    };
+
+    expect(render(attributes)).toEqual('');
+  });
 });

@@ -1,8 +1,8 @@
 
-import { findAndReplaceUnits } from 'css-math/lib/parser';
 import parser  from './index';
 import wrapper from '../../wrapper';
-import styleHelper from '../row/styleHelper';
+import styleHelper, { getClassName } from '../row/styleHelper';
+import attributesToString from '../../../helpers/attributesToString';
 
 /**
  * Render the column
@@ -15,23 +15,61 @@ import styleHelper from '../row/styleHelper';
  * @param attributes
  * @return
  */
-export const render = ({ backgroundColor, calcWidth, children, maxWidth, minWidth, mobileBreakpoint, mobileWidth, padding, width }, { template }) => {
-  const paddingValue = findAndReplaceUnits(padding).value;
+export const render = ({ align, backgroundColor, calcWidth, children, maxWidth, minWidth, mobileBreakpoint, mobileWidth, padding, width }, { template }) => {
+  const className = getClassName(width);
 
   // add the style width to the stylesheet
   template.getStyles().addHelper('mmm-row', styleHelper(mobileBreakpoint), [width]);
 
-  return `<div class="column layout-${width}" style="background-color: ${backgroundColor}; vertical-align: top; font-family: sans-serif; min-width: ${minWidth}; max-width: ${maxWidth}; width: ${mobileWidth}; width: ${calcWidth};">
-               <table width="100%" cellpadding="${paddingValue}" cellspacing="0" style="border-collapse: collapse; margin: 0px; padding: ${padding}; border: 0px; mso-padding-alt: ${padding};">
-                 <tbody>
-                   <tr>
-                     <td width="100%" style="padding: ${padding};">
-                      {{children}}
-                     </td>
-                   </tr>
-                 </tbody>
-               </table>
-             </div>`;
+  const attributes = {
+    div: attributesToString({
+      'class': `column ${className}`,
+      style: {
+        backgroundColor: backgroundColor,
+        verticalAlign: 'top',
+        // fontFamily: 'sans-serif',
+        minWidth: minWidth,
+        maxWidth: maxWidth,
+        // use array to add multiple tags with the same name
+        width: [
+          mobileWidth,
+          calcWidth,
+        ],
+      },
+    }),
+    table: attributesToString({
+      cellpadding: '0',
+      cellspacing: '0',
+      width: '100%',
+      style: {
+        border: '0px',
+        borderCollapse: 'collapse',
+        margin: '0px',
+        msoPaddingAlt: padding,
+        padding: padding,
+      },
+    }),
+    td: attributesToString({
+      align: align,
+      width: '100%',
+      style: {
+        padding: padding,
+        textAlign: align,
+      },
+    }),
+  };
+
+  return `<div ${attributes.div}>
+             <table ${attributes.table}>
+               <tbody>
+                 <tr>
+                   <td ${attributes.td}>
+                    {{children}}
+                   </td>
+                 </tr>
+               </tbody>
+             </table>
+           </div>`;
 };
 
 export default wrapper(parser, render);

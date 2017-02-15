@@ -9,7 +9,7 @@ import wrapper from '../../wrapper';
  * @return string
  */
 export const render = ({ url }) => {
-  return `<!--[if !mso]><!-->
+  return (url ? `<!--[if !mso]><!-->
     <style type="text/css">
       @import url("${url}");
     </style>
@@ -18,7 +18,7 @@ export const render = ({ url }) => {
       rel="stylesheet"
       type="text/css"
     />
-    <!--<![endif]-->`;
+    <!--<![endif]-->` : '');
 };
 
 /**

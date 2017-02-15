@@ -1,6 +1,5 @@
 
 import { fraction, max, min, parser } from 'css-math';
-import get from 'lodash/get';
 import forEach from 'lodash/forEach';
 import { styles as defaultStyles } from '../../../config';
 
@@ -12,8 +11,6 @@ import { styles as defaultStyles } from '../../../config';
 const getColumns = (children) => {
   return children.filter((child, key) => {
     child.childrenPosition = key;
-    // child.setAttribute('childrenPosition', key);
-
     const tagName = String(child.tagName).toLowerCase();
     return (row.allowedChildren.indexOf(tagName) !== -1);
   });
@@ -21,13 +18,14 @@ const getColumns = (children) => {
 
 export const defaultAttributes = {
   backgroundColor: '',
+  backgroundImage: '',
   centerOnMobile: true,
   contentWidth: '', // style.contentWidth
   padding: '0px',
   spacing: 'none', // [none, inside, outside, both]
   spacingColor: '',
   spacingWidth: '0px',
-  width: 'fixed', // [fixed, full]
+  fullWidth: false,
 };
 
 /**
@@ -38,6 +36,30 @@ export const defaultAttributes = {
  */
 export const getDefaultAttributes = (attributes = {}) =>
   Object.assign({}, defaultAttributes, attributes);
+
+/**
+ * Is the value a fraction or percentage?
+ *
+ * @param value
+ * @return boolean
+ */
+const isFraction = (value) => {
+  if (!value || typeof value !== 'string') {
+    return false;
+  }
+
+  if (value.search(/[0-9\.]*\/[0-9\.]*/i) !== -1) {
+    // value is 1/5 type fraction
+    return true;
+  }
+
+  if (value.search(/%$/) !== -1) {
+    // value is a percent
+    return true;
+  }
+
+  return false;
+};
 
 /**
  * Calculate the widths for the columns
@@ -54,10 +76,10 @@ const calculateColumns = (columns, contentWidth, mobileWidth, mobileBreakpoint, 
   const defaultWidth = fraction(`1 / ${total}`, contentWidth);
 
   return columns.map((column) => {
-    // set the width
-    let columnWidth = get(column, ['attribs', 'width']);
+    // get the width
+    let columnWidth = column.getAttribute('width');
 
-    if (columnWidth && columnWidth.search(/[0-9\.]*\/[0-9\.]*/i) !== -1) {
+    if (isFraction(columnWidth)) {
       columnWidth = fraction(columnWidth, contentWidth);
     }
 
@@ -134,7 +156,7 @@ export const getContentWidth = ({ contentWidth, columns, spacing, spacingWidth }
  */
 export const getContentInnerWidth = ({ contentWidth, columns, spacing, spacingWidth }) => {
   if (['outside', 'both'].indexOf(spacing) === -1) {
-    contentWidth;
+    return contentWidth;
   }
 
   // force outside to calculate the total inside width
@@ -224,6 +246,7 @@ const row = (attributes, children, { template }) => {
     calcWidth: calcWidth,
     children: childrenWithWidths,
     contentInnerWidth: contentInnerWidth,
+    fullWidth: (attributes.fullWidth === 'true' ? true : false),
     maxWidth: max([rowAttributes.contentWidth, rowAttributes.mobileWidth]),
     minWidth: min([rowAttributes.contentWidth, rowAttributes.mobileWidth]),
     mobileSpaceWidth: mobileWidth,

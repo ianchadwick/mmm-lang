@@ -1,131 +1,7 @@
 
 import Dom from './parser/dom';
-import camelCase from 'lodash/camelCase';
-import forEach from 'lodash/forEach';
+import toArray from 'lodash/toArray';
 import Template from './template';
-
-/**
- * Normalise the attributes
- *
- * @param element
- * @returns {{}}
- */
-const normaliseAttribs = (attribs) => {
-  const attributes = {
-    className: (classNames = []) => {
-      const classes = (typeof classNames === 'string' ? classNames.split(' ') : classNames);
-      const classAttrs = (typeof attribs.class === 'string' ? attribs.class.split(' ') : []);
-      return classes.concat(classAttrs).join(' ');
-    },
-  };
-
-  forEach(attribs, (value, name) => {
-    attributes[camelCase(name)] = value;
-  });
-
-  return attributes;
-};
-
-/**
- * Get the elements outer html
- *
- * @param $doc
- * @param element
- * @param children
- * @return string
- */
-const getOuterHtmlx = ($doc, element, children) => {
-  if (element.type === 'text') {
-    return element.data;
-  }
-
-  const $element = $doc(element);
-
-  // @todo Why does this fix children doesn't exists errors with a > img ?!!
-  $doc('<div />').append($element).html();
-
-  let $wrapped = $element.wrap('<div />');
-
-  if (children && children.length) {
-    $wrapped.html('{{children}}');
-  }
-
-  return $wrapped.parent().html();
-};
-
-/**
- * Parse the component
- *
- * @param name
- * @param attribs
- * @param children
- * @param options
- * @param onError
- * @returns {*}
- */
-export const parseComponentx = (name, attribs, children = [], options = {}, onError = () => '') => {
-  const component = options.engine.getComponentByTag(name);
-
-  if (! component) {
-    return onError();
-  }
-
-  const componentOptions = Object.assign({}, options, {
-    parseComponent: (name, attribs, children = []) => {
-      return parseComponent(name, normaliseAttribs(attribs), children, componentOptions, onError());
-    },
-  });
-
-  // @todo Remove the template from the first parameter as it's mostly not used
-  // and also passed in the options now
-  return component(attribs, children, componentOptions);
-};
-
-/**
- * Parse the html element and it's children
- *
- * @param element
- * @param $doc
- * @param template
- * @param engine
- * @param parentAttributes
- * @returns {string}
- */
-const parseElementX = (element, $doc, template, engine, parentAttributes = {}) => {
-  let parsedChildren = [];
-  const { attribs, children, name } = element;
-  // const component = engine.getComponentByTag(name);
-  const normalisedAttribs = normaliseAttribs(attribs);
-
-  const options = {
-    engine,
-    parentAttributes,
-    parser: (element, parentAttributes = {}) => {
-      return parseElement($doc(element)[0], $doc, template, engine, parentAttributes);
-    },
-    template,
-  };
-
-  const html = parseComponent(name, normalisedAttribs, children, options, () => {
-    return getOuterHtml($doc, element, children);
-  });
-
-  // check if the element has children if so parse those
-  if (typeof children === 'object' && children.constructor === Array) {
-    parsedChildren = children.map((child) => {
-      return parseElement(child, $doc, template, engine, normalisedAttribs);
-    });
-  }
-
-  return engine.parseComponent(html, template, parsedChildren);
-};
-
-
-
-
-
-
-
 
 /**
  * Get the elements outer html
@@ -220,6 +96,20 @@ const parseElement = (element, dom, template, engine, parentAttributes = {}) => 
 };
 
 /**
+ * Parse the merge tags and add to the template
+ *
+ * @param dom
+ * @param template
+ * @param engine
+ */
+const parseMerge = (dom, template, engine) => {
+  // find all the merge tags and parse them
+  toArray(dom.getDocument().querySelectorAll('mmm-merge')).map((element) => {
+    parseElement(element, dom, template, engine);
+  });
+};
+
+/**
  * Create the document
  *
  * @param html
@@ -260,11 +150,17 @@ export default (html, engine) => {
   const dom = Dom(html);
   const mmm = dom.getRoot();
 
+  // parse the merge tags
+  parseMerge(dom, template, engine);
+
   // parse the document
   let parsedHtml = parseElement(mmm, dom, template, engine, false);
 
   // add the style to the head
   parsedHtml = parsedHtml.replace('</head>', `${template.styles.render()}\n</head>`);
+
+  // apply the transformations
+  parsedHtml = engine.applyTransforms({ html: parsedHtml });
 
   // set the template html
   template.setHtml(parsedHtml);

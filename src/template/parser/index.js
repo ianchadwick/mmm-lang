@@ -4,7 +4,7 @@ import variables from './variables';
 
 export const defaultOptions = {
   variables: {
-    alwaysRemoveTags: true,
+    alwaysRemoveTags: false,
   },
 };
 

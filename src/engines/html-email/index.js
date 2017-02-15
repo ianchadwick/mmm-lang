@@ -20,6 +20,9 @@ import image from '../../components/body/image/html-email';
 // global components
 import conditional from '../../components/global/conditional/html5';
 
+// import the transforms
+import fontTransform from '../../transforms/font/html-email';
+
 // setup the default components in the order they should be executed
 const defaultComponents = [
   // parse the merge tags & title
@@ -45,6 +48,9 @@ const defaultComponents = [
   font,
 ];
 
+const defaultTransforms = [
+  fontTransform,
+];
 
 class HtmlEmail extends Engine {
   static getName() {
@@ -55,16 +61,10 @@ class HtmlEmail extends Engine {
    * Init with the components
    *
    * @param defaultComponents
+   * @param defaultTransforms
    */
-  constructor(components = defaultComponents) {
-    super(components);
-  }
-
-  /**
-   * Render the template
-   */
-  render() {
-
+  constructor(components = defaultComponents, transforms = defaultTransforms) {
+    super(components, transforms);
   }
 }
 

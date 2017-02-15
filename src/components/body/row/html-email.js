@@ -2,22 +2,136 @@
 import cssParser, { findAndReplaceUnits } from 'css-math/lib/parser';
 import parser  from './index';
 import wrapper from '../../wrapper';
-import styleHelper from './styleHelper';
+import styleHelper, { getClassName } from './styleHelper';
+import { defaultTableAttributes } from '../../../helpers/style';
+import attributesToString, { mapAttributesToString } from '../../../helpers/attributesToString';
 
-const applyBorder = (innerHtml, contentWidth, spacing, spacingWidth, spacingColor, widthHtml) => {
+const applyOuter = (innerHtml, { backgroundColor, backgroundImage, contentWidth, fullWidth }) => {
+  const attributes = mapAttributesToString({
+    table: defaultTableAttributes({
+      align: 'center',
+      width: (fullWidth ? '100%' : contentWidth),
+      backgroundColor: backgroundColor,
+      style: {
+        margin: 'auto',
+      },
+    }),
+    td: {
+      background: backgroundImage,
+      backgroundColor: backgroundColor,
+      valign: 'top',
+      align: 'center',
+    },
+    vRect: {
+      fill: true,
+      stroked: false,
+      style: {
+        width: (fullWidth ? undefined : contentWidth),
+        msoWidthPercent: (fullWidth ? 1000 : undefined)
+      }
+    },
+    vFill: {
+      type: 'tile',
+      src: backgroundImage,
+      color: backgroundColor,
+    },
+    vTextbox: {
+      inset: '0px, 0px, 0px, 0px',
+      style: {
+        msoFitShapeToText: true,
+        padding: 0,
+      }
+    },
+  });
+
+  return `<table ${attributes.table}>
+              <tr>
+                <td ${attributes.td}>
+                  <div>
+                  ${innerHtml}
+                  </div>
+                </td>
+              </tr>
+            </table>`;
+
+  /**
+   * @todo Allow the use of background images. The below code doesn't work correctly on Outlook 2016
+   * due to margins above and below the content and also left align elements.
+   */
+  return `<table ${attributes.table}>
+              <tr>
+                <td ${attributes.td}>
+                  <!--[if gte mso 9]>
+                    <v:rect xmlns:v="urn:schemas-microsoft-com:vml" ${attributes.vRect}>
+                    <v:fill ${attributes.vFill} />
+                    <v:textbox ${attributes.vTextbox}>
+                    <center>
+                  <![endif]-->
+                  <div>
+                  ${innerHtml}
+                  </div>
+                  <!--[if gte mso 9]>
+                    </center>
+                    </v:textbox>
+                    </v:rect>
+                  <![endif]-->
+                </td>
+              </tr>
+            </table>`;
+};
+
+const applyBorder = (innerHtml, contentWidth, spacing, spacingWidth, spacingColor, widthAttributes) => {
   if (['outside', 'both'].indexOf(spacing) === -1) {
     return innerHtml;
   }
 
   const spacingWidthValue = findAndReplaceUnits(spacingWidth).value;
+  const contentWidthValue = findAndReplaceUnits(contentWidth).value;
 
-  return `<table width="${contentWidth}" cellpadding="0" cellspacing="0" align="center" class="layout-border" style="border-collapse: collapse; margin: 0px; padding: 0px; ${widthHtml}">
+  const attributes = {
+    table: attributesToString({
+      align: 'center',
+      width: contentWidthValue,
+      cellpadding: '0',
+      cellspacing: '0',
+      'class': 'layout-border',
+      style: Object.assign({}, {
+        borderCollapse: 'collapse',
+        margin: '0px',
+        msoPaddingAlt: '0px',
+        padding: '0px',
+      }, widthAttributes),
+    }),
+    td: attributesToString({
+      valign: 'top',
+      bgcolor: spacingColor,
+      width: spacingWidthValue,
+      style: {
+        width: spacingWidth,
+      },
+    }),
+    tableInner: attributesToString({
+      width: spacingWidthValue,
+      cellpadding: '0',
+      cellspacing: '0',
+    }),
+    tdInner: attributesToString({
+      width: spacingWidthValue,
+    }),
+    img: attributesToString({
+      width: spacingWidthValue,
+      height: spacingWidthValue,
+      src: 'https://www.mizmoz.com/img/spacer.gif',
+    })
+  };
+
+  return `<table ${attributes.table}>
         <tr>
-          <td valign="top" bgcolor="${spacingColor}" width="${spacingWidthValue}" style="width: ${spacingWidth};">
-            <table width="${spacingWidthValue}" cellpadding="0" cellspacing="0">
+          <td ${attributes.td}>
+            <table ${attributes.tableInner}>
               <tr>
-                <td width="${spacingWidthValue}">
-                  <img width="${spacingWidthValue}" height="${spacingWidthValue}" src="https://www.mizmoz.com/img/spacer.gif" />
+                <td ${attributes.tdInner}>
+                  <img ${attributes.img} />
                 </td>
               </tr>
             </table>
@@ -25,11 +139,11 @@ const applyBorder = (innerHtml, contentWidth, spacing, spacingWidth, spacingColo
           <td>
             ${innerHtml}
           </td>
-          <td valign="top" bgcolor="${spacingColor}" width="${spacingWidthValue}" style="width: ${spacingWidth};">
-            <table width="${spacingWidthValue}" cellpadding="0" cellspacing="0">
+          <td ${attributes.td}>
+            <table ${attributes.tableInner}>
               <tr>
-                <td width="${spacingWidthValue}">
-                  <img width="${spacingWidthValue}" height="${spacingWidthValue}" src="https://www.mizmoz.com/img/spacer.gif" />
+                <td ${attributes.tdInner}>
+                  <img ${attributes.img} />
                 </td>
               </tr>
             </table>
@@ -49,12 +163,38 @@ const applyInsideBorder = (innerHtml, key, spacing, spacingWidth, spacingColor, 
   }
 
   const spacingWidthValue = findAndReplaceUnits(spacingWidth).value;
-
   const calcWidth = calc(spacingWidth, mobileWidth, mobileBreakpoint);
 
-  return `<td class="column" valign="top" bgcolor="${spacingColor}" width="${spacingWidthValue}" style="width: ${spacingWidth};">
+  const attributes = {
+    td: attributesToString({
+      'class': 'column',
+      valign: 'top',
+      bgcolor: spacingColor,
+      width: spacingWidthValue,
+      style: {
+        width: spacingWidth,
+      },
+    }),
+    div: attributesToString({
+      'class': `column simple-${spacingWidthValue}`,
+      style: {
+        margin: 'auto',
+        background: spacingColor,
+        height: spacingWidth,
+        lineHeight: spacingWidth,
+        maxWidth: mobileWidth,
+        minWidth: spacingWidth,
+        width: [
+          '100%',
+          calcWidth,
+        ],
+      },
+    }),
+  };
+
+  return `<td ${attributes.td}>
       <![endif]-->
-			<div class="column simple-${spacingWidthValue}" style="margin: auto; background: ${spacingColor}; height: ${spacingWidth}; line-height: ${spacingWidth}; max-width: ${mobileWidth}; min-width: ${spacingWidth}; width: 100%; width: ${calcWidth};">&nbsp;</div>
+			<div ${attributes.div}>&nbsp;</div>
       <!--[if (mso)|(IE)]>
       </td>
       ${innerHtml}
@@ -111,6 +251,7 @@ export const getCalculatedAttributes = (attributes) => {
  */
 export const render = (attributes, { template, dom }) => {
   const {
+    backgroundColor,
     calcWidth,
     children,
     contentWidth,
@@ -123,19 +264,27 @@ export const render = (attributes, { template, dom }) => {
     spacing,
     spacingWidth,
     spacingColor,
-    width,
   } = getCalculatedAttributes(attributes);
 
   const { getElementAttribute } = dom;
-  const className = `layout-${contentWidth}`;
+  const className = getClassName(contentWidth);
+  const classNameInner = getClassName(contentInnerWidth);
 
   const styleWidths = [
     contentWidth,
+    contentInnerWidth,
   ];
 
   // get the min width of the table
-  const widthHtml = `max-width: ${maxWidth}; min-width: ${minWidth}; width: ${mobileWidth}; width: ${calcWidth};`;
-  const tableWidth = findAndReplaceUnits(contentWidth).value;
+  const widthAttributes = {
+    maxWidth: maxWidth,
+    minWidth: minWidth,
+    width: [
+      mobileWidth,
+      calcWidth,
+    ],
+  };
+  const tableInnerWidth = findAndReplaceUnits(contentInnerWidth).value;
 
   const innerHtml = children.map((child, key) => {
     const styleWidth = findAndReplaceUnits(getElementAttribute(child, 'width')).value;
@@ -144,20 +293,36 @@ export const render = (attributes, { template, dom }) => {
     // add the width so we can add classes later
     styleWidths.push(getElementAttribute(child, 'width'));
 
-    return applyInsideBorder(`<td class="column" valign="top" width="${styleWidth}" bgcolor="${background}">
+    const tdAttributes = attributesToString({
+      'class': 'column',
+      valign: 'top',
+      width: styleWidth,
+      bgcolor: background
+    });
+
+    return applyInsideBorder(`<td ${tdAttributes}>
             <![endif]-->
               {{children.${child.childrenPosition}}}
             <!--[if (mso)|(IE)]>
             </td>`, key, spacing, spacingWidth, spacingColor, mobileSpaceWidth, mobileBreakpoint);
   });
 
+  const tableAttributes = attributesToString({
+    'class': classNameInner,
+    align: 'center',
+    cellpadding: '0',
+    cellspacing: '0',
+    bgcolor: backgroundColor,
+    width:tableInnerWidth,
+  });
+
   const innerContent = applyBorder(`<!--[if (mso)|(IE)]>
-        <table class="${className}" cellpadding="0" cellspacing="0" align="center" bgcolor="#ffffff" width="${tableWidth}">
+        <table ${tableAttributes}>
           <tr>
             ${innerHtml.join('')}
           </tr>
         </table>
-      <![endif]-->`, contentWidth, spacing, spacingWidth, spacingColor, widthHtml);
+      <![endif]-->`, contentWidth, spacing, spacingWidth, spacingColor, widthAttributes);
 
   // add the style widths to the stylesheet
   template.getStyles().addHelper('mmm-row', styleHelper(mobileBreakpoint), [contentWidth]);
@@ -170,9 +335,18 @@ export const render = (attributes, { template, dom }) => {
     classes.push(attributes.class);
   }
 
-  return `<div class="${classes.join(' ')}" style="background-color: #ffffff; display: table; Margin: 0 auto; ${widthHtml}">
+  const divAttributes = attributesToString({
+    'class': classes.join(' '),
+    style: Object.assign({}, {
+      backgroundColor: backgroundColor,
+      display: 'table',
+      margin: '0 auto',
+    }, widthAttributes),
+  });
+
+  return applyOuter(`<div ${divAttributes}>
       ${innerContent}
-    </div>`;
+    </div>`, attributes);
 };
 
 export default wrapper(parser, render);

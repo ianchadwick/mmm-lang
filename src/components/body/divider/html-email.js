@@ -22,7 +22,7 @@ export const render = (attributes, options) => {
 
   return `<table cellpadding="${marginValue}" cellspacing="0" width="100%" style="border-collapse: collapse; margin: 0px; padding: ${margin}; border: 0px; width: 100%;">
     <tr>
-      <td>
+      <td style="padding: ${margin}; width: 100%">
         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; min-width:100%;" bgcolor="${color}">
           <tr>
             <td height="${heightValue}" width="100%" style="font-size: ${height}; line-height: ${height};">&nbsp;</td>
