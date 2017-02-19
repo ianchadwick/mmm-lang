@@ -27,7 +27,7 @@ export const getDropShadow = (shadow) => {
  * @param style
  * @returns {{align: *, bgcolor: *, cellpadding: string, cellspacing: string, width: *, style: *}}
  */
-export const defaultTableAttributes = ({ align, backgroundColor, className, padding, width, style }) => {
+export const defaultTableAttributes = ({ align, backgroundColor, className, padding, width = '100%', style }) => {
   const widthValue = (width.search('%') !== -1 ? width : findAndReplaceUnits(width).value);
   const paddingValue = (padding ? padding : 0);
 

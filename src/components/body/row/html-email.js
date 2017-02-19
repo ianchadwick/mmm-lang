@@ -6,16 +6,29 @@ import styleHelper, { getClassName } from './styleHelper';
 import { defaultTableAttributes } from '../../../helpers/style';
 import attributesToString, { mapAttributesToString } from '../../../helpers/attributesToString';
 
-const applyOuter = (innerHtml, { backgroundColor, backgroundImage, contentWidth, fullWidth }) => {
+const applyOuter = (innerHtml, { backgroundColor, backgroundImage, contentWidth, fullWidth }, classes, widthAttributes) => {
+  let tableAttrs = {
+    align: 'center',
+    backgroundColor: backgroundColor,
+    style: {
+      margin: 'auto',
+    },
+  };
+
+  if (fullWidth) {
+    tableAttrs.width = '100%';
+
+    tableAttrs = defaultTableAttributes(tableAttrs);
+  } else {
+    tableAttrs = Object.assign({}, defaultTableAttributes(tableAttrs), {
+      width: contentWidth,
+      className: classes.join(' '),
+      style: widthAttributes,
+    });
+  }
+
   const attributes = mapAttributesToString({
-    table: defaultTableAttributes({
-      align: 'center',
-      width: (fullWidth ? '100%' : contentWidth),
-      backgroundColor: backgroundColor,
-      style: {
-        margin: 'auto',
-      },
-    }),
+    table: tableAttrs,
     td: {
       background: backgroundImage,
       backgroundColor: backgroundColor,
@@ -47,9 +60,7 @@ const applyOuter = (innerHtml, { backgroundColor, backgroundImage, contentWidth,
   return `<table ${attributes.table}>
               <tr>
                 <td ${attributes.td}>
-                  <div>
                   ${innerHtml}
-                  </div>
                 </td>
               </tr>
             </table>`;
@@ -346,7 +357,7 @@ export const render = (attributes, { template, dom }) => {
 
   return applyOuter(`<div ${divAttributes}>
       ${innerContent}
-    </div>`, attributes);
+    </div>`, attributes, classes, widthAttributes);
 };
 
 export default wrapper(parser, render);
