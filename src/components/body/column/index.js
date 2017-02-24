@@ -18,7 +18,7 @@ export const defaultAttributes = {
  * @param options
  */
 const column = (attributes, children, { parentAttributes, template }) => {
-  const { backgroundColor } = parentAttributes;
+  const { backgroundColor, padding } = parentAttributes;
 
   const extraAttributes = {
     children,
@@ -30,7 +30,7 @@ const column = (attributes, children, { parentAttributes, template }) => {
     extraAttributes,
     attributes,
     // fallback to parent background color
-    { backgroundColor }
+    { backgroundColor, padding }
   );
 };
 

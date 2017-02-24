@@ -11,10 +11,11 @@ const createColumnMock = (attributes = {}, children = []) => {
     attributes: attributes,
     getAttribute: jest.fn(),
     setAttribute: jest.fn(),
+    //setAttribute: console.log,
   };
 };
 
-const createParserMock = (columns = 1, attributes = {}) => {
+const createParserMock = (columns = 1, attributes = {}, extra = {}) => {
   const children = [];
 
   switch (columns) {
@@ -26,7 +27,11 @@ const createParserMock = (columns = 1, attributes = {}) => {
       children.push(createColumnMock());
   }
 
-  return parser(attributes, children, { template });
+  return parser(
+    attributes,
+    children,
+    Object.assign({}, { template }, extra)
+  );
 };
 
 describe('Parsing the row component', () => {
@@ -299,5 +304,61 @@ describe('Parsing the row component', () => {
       expect(setAttribute).toBeCalledWith('mobile-width', '296px');
       expect(setAttribute).toBeCalledWith('calc-width', 'calc(69624px - 11200%)');
     }
+  });
+
+  /**
+   * Row should use parent width when no width is supplied and parent width is available
+   */
+  it('should return a table with parent width when no width is supplied', () => {
+    const result = createParserMock(1, {}, {
+      parentAttributes: {
+        width: '576px',
+        mobileWidth: '296px',
+      },
+    });
+
+    expect(result.contentWidth).toEqual('576px');
+    expect(result.contentInnerWidth).toEqual('576px');
+    expect(result.minWidth).toEqual('296px');
+    expect(result.maxWidth).toEqual('576px');
+    expect(result.mobileWidth).toEqual('296px');
+    expect(result.calcWidth).toEqual('calc(28000% - 173024px)');
+    expect(result.children.length).toEqual(1);
+
+    const setAttribute = result.children[0].setAttribute;
+    expect(setAttribute).toBeCalledWith('width', '576px');
+    expect(setAttribute).toBeCalledWith('min-width', '296px');
+    expect(setAttribute).toBeCalledWith('max-width', '576px');
+    expect(setAttribute).toBeCalledWith('mobile-width', '296px');
+    expect(setAttribute).toBeCalledWith('calc-width', 'calc(28000% - 173024px)');
+  });
+
+  /**
+   * Row should use parent width when no width is supplied and parent width is available
+   */
+  it('should return a table with parent width & padding when no width is supplied', () => {
+    const result = createParserMock(1, {}, {
+      parentAttributes: {
+        width: '600px',
+        mobileWidth: '320px',
+        padding: '12px',
+      },
+    });
+
+    expect(result.contentWidth).toEqual('576px');
+    expect(result.contentInnerWidth).toEqual('576px');
+    expect(result.minWidth).toEqual('296px');
+    expect(result.maxWidth).toEqual('576px');
+    expect(result.mobileWidth).toEqual('296px');
+    expect(result.calcWidth).toEqual('calc(28000% - 173024px)');
+    expect(result.children.length).toEqual(1);
+
+    const setAttribute = result.children[0].setAttribute;
+    expect(setAttribute).toBeCalledWith('padding', '0px');
+    expect(setAttribute).toBeCalledWith('width', '576px');
+    expect(setAttribute).toBeCalledWith('min-width', '296px');
+    expect(setAttribute).toBeCalledWith('max-width', '576px');
+    expect(setAttribute).toBeCalledWith('mobile-width', '296px');
+    expect(setAttribute).toBeCalledWith('calc-width', 'calc(28000% - 173024px)');
   });
 });

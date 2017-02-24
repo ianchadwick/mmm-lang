@@ -1,5 +1,5 @@
 
-import { fraction, max, min, parser } from 'css-math';
+import { fraction, getPaddingBox, max, min, parser } from 'css-math';
 import forEach from 'lodash/forEach';
 import { styles as defaultStyles } from '../../../config';
 
@@ -94,7 +94,8 @@ const calculateColumns = (columns, contentWidth, mobileWidth, mobileBreakpoint, 
       'calc-width': calc(desktopWidth, mobileWidth, mobileBreakpoint),
     };
 
-    if (typeof column.getAttribute('padding') === 'undefined') {
+    const columnPadding = column.getAttribute('padding');
+    if (typeof columnPadding === 'undefined' || columnPadding === null) {
       // use the parent padding as none is set on the element
       newAttributes.padding = padding;
     }
@@ -135,7 +136,7 @@ export const calculateSpacing = (columnCount, spacing, spacingWidth) => {
  * Get the content width
  *
  * @param contentWidth
- * @param columnCount
+ * @param columns
  * @param spacing
  * @param spacingWidth
  * @returns {*}
@@ -207,13 +208,38 @@ const calc = (desktopWidth, mobileWidth, mobileBreakpoint) => {
 };
 
 /**
+ * Get the parent attributes
+ *
+ * @param mobileWidth
+ * @param width
+ * @param padding
+ * @returns {{}}
+ */
+export const getParentAttributes = ({ mobileWidth, width, padding }) => {
+  const attributes = {};
+  const box = getPaddingBox(padding);
+  
+  if (typeof width !== 'undefined') {
+    const contentWidth = parser(`${width} - ${box.width}`);
+    attributes.contentWidth = contentWidth;
+    attributes.maxWidth = contentWidth;
+  }
+  
+  if (typeof mobileWidth !== 'undefined') {
+    attributes.mobileWidth = parser(`${mobileWidth} - ${box.width}`);
+  }
+
+  return attributes;
+};
+
+/**
  * Parse the item
  *
  * @param template
  * @param attributes
  * @param children
  */
-const row = (attributes, children, { template }) => {
+const row = (attributes, children, { parentAttributes = {}, template }) => {
   const columns = getColumns(children);
   const rowAttributes = Object.assign({}, getDefaultAttributes({
     columns: columns.length,
@@ -221,8 +247,8 @@ const row = (attributes, children, { template }) => {
     maxWidth: template.getVariable('style.contentWidth', defaultStyles.contentWidth),
     mobileWidth: template.getVariable('style.mobileWidth', defaultStyles.mobileWidth),
     mobileBreakpoint: template.getVariable('style.breakpoint.mobile', defaultStyles.mobileBreakpoint),
-  }), attributes);
-
+  }), getParentAttributes(parentAttributes), attributes);
+  
   const contentWidth = getContentWidth(rowAttributes);
   const contentInnerWidth = getContentInnerWidth(rowAttributes);
   const mobileWidth = getMobileWidth(rowAttributes);

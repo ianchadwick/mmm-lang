@@ -6,7 +6,14 @@ import styleHelper, { getClassName } from './styleHelper';
 import { defaultTableAttributes } from '../../../helpers/style';
 import attributesToString, { mapAttributesToString } from '../../../helpers/attributesToString';
 
-const applyOuter = (innerHtml, { backgroundColor, backgroundImage, contentWidth, fullWidth }, classes, widthAttributes) => {
+const applyOuter = (innerHtml, rowAttributes, classes, widthAttributes) => {
+  const {
+    backgroundColor,
+    backgroundImage,
+    contentWidth,
+    fullWidth,
+  } = rowAttributes;
+
   let tableAttrs = {
     align: 'center',
     backgroundColor: backgroundColor,
