@@ -39,11 +39,12 @@ export const defaultTableAttributes = ({ align, backgroundColor, className, padd
     cellspacing: '0',
     width: widthValue,
     style: Object.assign({}, {
+      border: 0,
       borderCollapse: 'collapse',
+      margin: 0,
       msoPaddingAlt: paddingValue,
       padding: paddingValue,
-      margin: 0,
-      border: 0,
+      tableLayout: 'fixed',
       width: width,
     }, style),
   };

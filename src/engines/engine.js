@@ -35,11 +35,15 @@ export default class Engine {
   /**
    * Apply the transforms to the html
    *
+   * @param getDom
    * @param html
    * @return string
    */
-  applyTransforms = ({ html }) => this.transforms.reduce((template, transform) => (
-    transform({ html: template })
+  applyTransforms = ({ getDom, html }) => this.transforms.reduce((template, transform) => (
+    transform({
+      getDom: getDom,
+      html: template,
+    })
   ), html);
 
   /**

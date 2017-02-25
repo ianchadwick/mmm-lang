@@ -14,9 +14,9 @@ export const render = (attributes) => {
       <v:fill type="tile" src="" color="${backgroundColor}"/>
     </v:background>
     <![endif]-->
-    <table height="100%" width="100%" cellpadding="0" cellspacing="0" border="0">
+    <table height="100%" width="100%" cellpadding="0" cellspacing="0" border="0" style="table-layout: fixed">
       <tr>
-        <td valign="top" align="left">
+        <td valign="top" align="center">
           {{children}}
         </td>
       </tr>

@@ -325,14 +325,12 @@ export const render = (attributes, { template, dom }) => {
             </td>`, key, spacing, spacingWidth, spacingColor, mobileSpaceWidth, mobileBreakpoint);
   });
 
-  const tableAttributes = attributesToString({
-    'class': classNameInner,
-    align: 'center',
-    cellpadding: '0',
-    cellspacing: '0',
-    bgcolor: backgroundColor,
-    width:tableInnerWidth,
-  });
+   const tableAttributes = attributesToString(defaultTableAttributes({
+     align: 'center',
+     backgroundColor: backgroundColor,
+     className: classNameInner,
+     width: contentInnerWidth,
+   }));
 
   const innerContent = applyBorder(`<!--[if (mso)|(IE)]>
         <table ${tableAttributes}>

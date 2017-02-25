@@ -1,4 +1,5 @@
 
+import dom from '../src/parser/node/dom';
 import parser from '../src/parser';
 import HtmlEmail from '../src/engines/html-email';
 import { basicTemplate } from './fixtures';
@@ -6,9 +7,13 @@ import { basicTemplate } from './fixtures';
 import { jsdom } from 'jsdom';
 import jQuery from 'jquery';
 
+/**
+ * @todo Add some tests for the parser
+ */
+
 describe('parse a basic template', () => {
   // render the template
-  const template = parser(basicTemplate, new HtmlEmail());
+  const template = parser(basicTemplate, dom, new HtmlEmail());
 
   it('should return the correct merge values from the <mmm-head>', () => {
     expect(template.getVariables().toJS()).toEqual({
@@ -34,7 +39,7 @@ describe('parse a basic template', () => {
     // console.log(window.document.documentElement.outerHTML);
 
     $('mmm').children().each((key, element) => {
-      console.log(element.tagName);
+      // console.log(element.tagName);
     });
   });
 });

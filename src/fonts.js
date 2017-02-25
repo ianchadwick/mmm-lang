@@ -896,16 +896,21 @@ export const resolveProvider = (name) => {
 };
 
 /**
- * Get the font for css
+ * Is this a safe font?
+ *
+ * @param font
+ * @return bool
+ */
+export const isSafe = font => (typeof fonts.safe[font] === 'object');
+
+/**
+ * Get the fallback fonts
  *
  * @param name
- * @returns {*}
+ * @param all
+ * @returns {Array}
  */
-export const getFontForCSS = (name) => {
-  let all = [
-    name,
-  ];
-
+export const getFallbackFonts = (name, all = []) => {
   const provider = resolveProvider(name);
 
   if (provider) {
@@ -917,6 +922,19 @@ export const getFontForCSS = (name) => {
       all = all.concat(categories[definition.category].fallback);
     }
   }
+
+  return all;
+};
+
+/**
+ * Get the font for css
+ *
+ * @param name
+ * @param include
+ * @returns {*}
+ */
+export const getFontForCSS = (name, include = [ name ]) => {
+  const all = getFallbackFonts(name, include);
   
   return all.map((font) => font.search(' ') !== -1 ? `'${font}'` : font)
     .join(',');

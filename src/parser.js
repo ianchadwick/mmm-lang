@@ -1,5 +1,4 @@
 
-import Dom from './parser/dom';
 import toArray from 'lodash/toArray';
 import Template from './template';
 
@@ -136,18 +135,18 @@ const createDocument = (html, root) => {
 /**
  * Parse the content and return it's parts
  *
- * - Parse the html
+ * - Parse the dom
  * - Parse each head item
  *
- * @param html
+ * @param dom
  * @param engine
  */
-export default (html, engine) => {
+export default (html, domParser, engine) => {
   // create the template
   const template = new Template();
 
   // init the dom
-  const dom = Dom(html);
+  const dom = domParser(html);
   const mmm = dom.getRoot();
 
   // parse the merge tags
@@ -160,33 +159,13 @@ export default (html, engine) => {
   parsedHtml = parsedHtml.replace('</head>', `${template.styles.render()}\n</head>`);
 
   // apply the transformations
-  parsedHtml = engine.applyTransforms({ html: parsedHtml });
+  parsedHtml = engine.applyTransforms({
+    getDom: html => dom.getFragment(html),
+    html: parsedHtml,
+  });
 
   // set the template html
   template.setHtml(parsedHtml);
 
   return template;
-
-  /*
-  const root = 'root';
-
-  // create the document and html
-  let { $doc, $html } = createDocument(html, root);
-
-  // create the template
-  const template = new Template();
-
-  // parse the document
-  const parsed = parseElement($html.children()[0], $doc, template, engine, false);
-
-  // parse the document again
-  $doc = createDocument(parsed, root).$doc;
-
-  // add the style to the head
-  $doc('head').append($doc(template.styles.render()));
-
-  template.setHtml($doc(root).html());
-
-  return template;
-  */
 };
