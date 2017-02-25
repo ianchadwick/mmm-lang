@@ -14,5 +14,3 @@ export const toEmail = (mmm) => {
     text: '',
   };
 };
-
-import test from './tests';
