@@ -18,7 +18,8 @@ const applyOuter = (innerHtml, rowAttributes, classes, widthAttributes) => {
     align: 'center',
     backgroundColor: backgroundColor,
     style: {
-      margin: 'auto',
+      marginLeft: 'auto',
+      marginRight: 'auto',
     },
   };
 
@@ -30,7 +31,7 @@ const applyOuter = (innerHtml, rowAttributes, classes, widthAttributes) => {
     tableAttrs = Object.assign({}, defaultTableAttributes(tableAttrs), {
       width: contentWidth,
       className: classes.join(' '),
-      style: widthAttributes,
+      style: Object.assign({}, tableAttrs.style, widthAttributes),
     });
   }
 
@@ -367,6 +368,8 @@ export const render = (attributes, { template, dom }) => {
       backgroundColor: backgroundColor,
       display: 'table',
       margin: '0 auto',
+      overflow: 'visible!important',
+      msOverflow: 'visible!important',
     }, widthAttributes),
   });
 

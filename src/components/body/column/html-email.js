@@ -35,6 +35,8 @@ export const render = ({ align, backgroundColor, calcWidth, children, maxWidth, 
           mobileWidth,
           calcWidth,
         ],
+        overflow: 'visible!important',
+        msOverflow: 'visible!important',
       },
     }),
     table: attributesToString({
