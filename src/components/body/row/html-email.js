@@ -38,9 +38,12 @@ const applyOuter = (innerHtml, rowAttributes, classes, widthAttributes) => {
     table: tableAttrs,
     td: {
       background: backgroundImage,
-      backgroundColor: backgroundColor,
       valign: 'top',
       align: 'center',
+      style: {
+        backgroundColor: backgroundColor,
+        borderCollapse: 'collapse',
+      }
     },
     vRect: {
       fill: true,
@@ -98,7 +101,7 @@ const applyOuter = (innerHtml, rowAttributes, classes, widthAttributes) => {
             </table>`;
 };
 
-const applyBorder = (innerHtml, contentWidth, spacing, spacingWidth, spacingColor, widthAttributes) => {
+const applyBorder = (innerHtml, className, contentWidth, spacing, spacingWidth, spacingColor, widthAttributes) => {
   if (['outside', 'both'].indexOf(spacing) === -1) {
     return innerHtml;
   }
@@ -112,7 +115,7 @@ const applyBorder = (innerHtml, contentWidth, spacing, spacingWidth, spacingColo
       width: contentWidthValue,
       cellpadding: '0',
       cellspacing: '0',
-      'class': 'layout-border',
+      'class': className,
       style: Object.assign({}, {
         borderCollapse: 'collapse',
         margin: '0px',
@@ -121,10 +124,11 @@ const applyBorder = (innerHtml, contentWidth, spacing, spacingWidth, spacingColo
       }, widthAttributes),
     }),
     td: attributesToString({
-      valign: 'top',
       bgcolor: spacingColor,
+      valign: 'top',
       width: spacingWidthValue,
       style: {
+        borderCollapse: 'collapse',
         width: spacingWidth,
       },
     }),
@@ -135,6 +139,9 @@ const applyBorder = (innerHtml, contentWidth, spacing, spacingWidth, spacingColo
     }),
     tdInner: attributesToString({
       width: spacingWidthValue,
+      style: {
+        borderCollapse: 'collapse',
+      },
     }),
     img: attributesToString({
       width: spacingWidthValue,
@@ -191,6 +198,7 @@ const applyInsideBorder = (innerHtml, key, spacing, spacingWidth, spacingColor, 
       width: spacingWidthValue,
       style: {
         width: spacingWidth,
+        borderCollapse: 'collapse',
       },
     }),
     div: attributesToString({
@@ -302,7 +310,6 @@ export const render = (attributes, { template, dom }) => {
       calcWidth,
     ],
   };
-  const tableInnerWidth = findAndReplaceUnits(contentInnerWidth).value;
 
   const innerHtml = children.map((child, key) => {
     const styleWidth = findAndReplaceUnits(getElementAttribute(child, 'width')).value;
@@ -313,9 +320,12 @@ export const render = (attributes, { template, dom }) => {
 
     const tdAttributes = attributesToString({
       'class': 'column',
+      bgcolor: background,
       valign: 'top',
       width: styleWidth,
-      bgcolor: background
+      style: {
+        borderCollapse: 'collapse',
+      },
     });
 
     return applyInsideBorder(`<td ${tdAttributes}>
@@ -338,7 +348,7 @@ export const render = (attributes, { template, dom }) => {
             ${innerHtml.join('')}
           </tr>
         </table>
-      <![endif]-->`, contentWidth, spacing, spacingWidth, spacingColor, widthAttributes);
+      <![endif]-->`, className, contentWidth, spacing, spacingWidth, spacingColor, widthAttributes);
 
   // add the style widths to the stylesheet
   template.getStyles().addHelper('mmm-row', styleHelper(mobileBreakpoint), [contentWidth]);

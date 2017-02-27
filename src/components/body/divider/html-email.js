@@ -22,10 +22,10 @@ export const render = (attributes, options) => {
 
   return `<table cellpadding="${marginValue}" cellspacing="0" width="100%" style="border-collapse: collapse; margin: 0px; padding: ${margin}; border: 0px; width: 100%;">
     <tr>
-      <td style="padding: ${margin}; width: 100%">
+      <td style="padding: ${margin}; width: 100%; border-collapse: collapse;">
         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; min-width:100%;" bgcolor="${color}">
           <tr>
-            <td height="${heightValue}" width="100%" style="font-size: ${height}; line-height: ${height};">&nbsp;</td>
+            <td height="${heightValue}" width="100%" style="font-size: ${height}; line-height: ${height}; border-collapse: collapse;">&nbsp;</td>
           </tr>
         </table>
       </td>

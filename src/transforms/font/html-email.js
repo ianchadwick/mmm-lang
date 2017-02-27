@@ -1,9 +1,7 @@
 
 import forEach from 'lodash/forEach';
 import kebabCase from 'lodash/kebabCase';
-import uniq from 'lodash/uniq';
-import sortBy from 'lodash/sortBy';
-import { getFontForCSS, getFallbackFonts, isSafe } from '../../fonts';
+import { getFontForCSS, isSafe } from '../../fonts';
 import stylesToObject from '../../helpers/stylesToObject';
 import stylesToString from '../../helpers/stylesToString';
 
@@ -14,38 +12,6 @@ import stylesToString from '../../helpers/stylesToString';
  * @param html
  * @return string
  */
-const transform = ({ html }) => {
-  // find all the tags with the font-family style attribute
-  const matches = html.match(/font-family:(.*?)[;"]/gi);
-
-  // filter the matches
-  let fonts = matches.reduce((all, match) => {
-    const font = match.match(/font-family:\s*(.*?)[;"]/i)[1];
-
-    if (font.search(',') === -1) {
-      all.push(font);
-    }
-
-    return all;
-  }, []);
-
-  if (!fonts.length) {
-    return html;
-  }
-
-  // make sure we don't duplicate the fonts and sort them by length descending as a really
-  // bad way of stopping us replacing partial matches, should fix this at some point
-  fonts = uniq(fonts);
-  fonts = sortBy(fonts, (font) => font.length).reverse();
-
-  // replace each of the fonts
-  return fonts.reduce((template, font) => {
-    const replace = getFontForCSS(font);
-    const expression = new RegExp(`(font-family:\\s*)${font}([;"])`, 'gi');
-    return template.replace(expression, `$1${replace}$2`);
-  }, html);
-};
-
 export default ({ getDom, html }) => {
   let classes = [];
   const dom = getDom(html);
@@ -90,8 +56,7 @@ export default ({ getDom, html }) => {
     }
 
     // create the style classes
-    const stylesheet = dom.createElement('style');
-    stylesheet.innerHTML = `<!--[if mso]>${styleString}<![endif]-->`;
+    const stylesheet = dom.createComment(`[if mso]><style>${styleString}</style><![endif]`);
     dom.querySelector('head').appendChild(stylesheet);
   }
 
