@@ -70,6 +70,7 @@ export const render = ({ align, alt, className, contentWidth, display, mobileWid
       width: widthValue,
       border: '0',
       style: {
+        width: '100%',
         maxWidth: maxWidth,
       },
     }),
