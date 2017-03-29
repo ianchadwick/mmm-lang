@@ -1,0 +1,9 @@
+.eslintrc
+.babelrc
+.npmignore
+/src
+/tests
+/node_modules
+/dist
+webpack.config.js
+stats.json
