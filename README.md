@@ -1,4 +1,4 @@
-# mmm-lang
+# [mizmoz.com](https://www.mizmoz.com) / mmm-lang
 
 The markup language for creating emails and pages in Mizmoz.
 
