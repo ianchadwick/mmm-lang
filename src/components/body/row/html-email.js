@@ -145,6 +145,7 @@ const applyBorder = (innerHtml, className, contentWidth, spacing, spacingWidth, 
       },
     }),
     img: attributesToString({
+      alt: 'Spacer image',
       width: spacingWidthValue,
       height: spacingWidthValue,
       src: 'https://www.mizmoz.com/img/spacer.gif',

@@ -9,7 +9,7 @@ describe('parse the font and return the url', () => {
     };
 
     expect(font(attributes)).toEqual({
-      url: 'https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400',
+      url: 'https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,700',
     });
   });
 
@@ -33,7 +33,7 @@ describe('parse the font and return the url', () => {
     };
 
     expect(font(attributes)).toEqual({
-      url: 'https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400&amp;subset=latin-ext',
+      url: 'https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,700&amp;subset=latin-ext',
     });
   });
 
@@ -43,7 +43,7 @@ describe('parse the font and return the url', () => {
     };
 
     expect(font(attributes)).toEqual({
-      url: 'https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400',
+      url: 'https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,700',
     });
   });
 

@@ -1,6 +1,6 @@
 {
   "name": "mmm-lang",
-  "version": "0.1.10",
+  "version": "0.2.0",
   "description": "Mizmoz Markup Language",
   "author": "Mizmoz Limited <support@mizmoz.com>",
   "homepage": "https://www.mizmoz.com/",
@@ -38,12 +38,10 @@
     "babel-polyfill": "^6.16.0",
     "babel-preset-es2015": "^6.18.0",
     "babel-preset-stage-0": "^6.16.0",
-    "cheerio": "^0.22.0",
-    "css-math": "^0.3.7",
+    "css-math": "^0.4.0",
     "html-entities": "^1.2.0",
     "jest": "^17.0.3",
     "jquery": "^3.1.1",
-    "js-base64": "^2.1.9",
     "jsdom": "^9.8.3",
     "lodash": "^4.17.2"
   },

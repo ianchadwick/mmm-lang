@@ -16,7 +16,7 @@ const getGoogleFontUrl = (name, { weight, subset }) => {
   parts.push(name.replace(/ /g, '+'));
 
   // add the font weights
-  parts.push(`:${(weight ? weight  : '200,400')}`);
+  parts.push(`:${(weight ? weight  : '200,400,700')}`);
 
   if (subset) {
     // add the subset of fonts to load

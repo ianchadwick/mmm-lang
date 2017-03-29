@@ -9,7 +9,7 @@ import camelCase from 'lodash/camelCase';
  * @return {*}
  */
 export default (styles, keyConverter = camelCase) => {
-  return styles.split(';').reduce((all, style) => {
+  return String(styles).split(';').reduce((all, style) => {
     const parts = style.split(':');
 
     if (parts.length === 2) {

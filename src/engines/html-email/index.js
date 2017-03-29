@@ -22,6 +22,7 @@ import conditional from '../../components/global/conditional/html5';
 
 // import the transforms
 import fontTransform from '../../transforms/font/html-email';
+import collapseMarginTransform from '../../transforms/collapse-margin/html-email';
 import doctypeTransform from '../../transforms/doctype/html-email';
 
 // setup the default components in the order they should be executed
@@ -51,6 +52,8 @@ const defaultComponents = [
 
 const defaultTransforms = [
   fontTransform,
+
+  collapseMarginTransform,
 
   // this must be the last item otherwise the HTML parsing may remove it
   doctypeTransform,

@@ -21,6 +21,11 @@ export const render = ({ align, backgroundColor, calcWidth, children, maxWidth, 
   // add the style width to the stylesheet
   template.getStyles().addHelper('mmm-row', styleHelper(mobileBreakpoint), [width]);
 
+  const divWidth = (mobileWidth && calcWidth ? [
+    mobileWidth,
+    calcWidth,
+  ]: width);
+
   const attributes = {
     div: attributesToString({
       'class': `column ${className}`,
@@ -31,10 +36,7 @@ export const render = ({ align, backgroundColor, calcWidth, children, maxWidth, 
         minWidth: minWidth,
         maxWidth: maxWidth,
         // use array to add multiple tags with the same name
-        width: [
-          mobileWidth,
-          calcWidth,
-        ],
+        width: divWidth,
         overflow: 'visible!important',
         msOverflow: 'visible!important',
       },
@@ -62,16 +64,16 @@ export const render = ({ align, backgroundColor, calcWidth, children, maxWidth, 
   };
 
   return `<div ${attributes.div}>
-             <table ${attributes.table}>
-               <tbody>
-                 <tr>
-                   <td ${attributes.td}>
+            <table ${attributes.table}>
+              <tbody>
+                <tr>
+                  <td ${attributes.td}>
                     {{children}}
-                   </td>
-                 </tr>
-               </tbody>
-             </table>
-           </div>`;
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>`;
 };
 
 export default wrapper(parser, render);

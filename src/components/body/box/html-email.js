@@ -3,6 +3,7 @@ import parser from './index';
 import wrapper from '../../wrapper';
 import { getDropShadow, defaultTableAttributes } from '../../../helpers/style';
 import { mapAttributesToString } from '../../../helpers/attributesToString';
+import { attributeTag } from '../../../transforms/collapse-margin/html-email';
 
 /**
  * Parse the image tag
@@ -61,6 +62,7 @@ export const render = (attributes, { template }) => {
 
     tdInner: {
       align: textAlign,
+      [attributeTag]: margin,
       style: {
         color: color,
         fontFamily: fontFamily,

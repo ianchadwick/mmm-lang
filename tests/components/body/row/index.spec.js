@@ -61,7 +61,6 @@ describe('Parsing the row component', () => {
     expect(setAttribute).toBeCalledWith('max-width', '600px');
     expect(setAttribute).toBeCalledWith('mobile-width', '320px');
     expect(setAttribute).toBeCalledWith('calc-width', 'calc(28000% - 173000px)');
-
   });
 
   /**

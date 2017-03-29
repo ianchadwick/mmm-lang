@@ -65,7 +65,7 @@ export const render = ({ align, alt, className, contentWidth, display, mobileWid
     img: attributesToString({
       'class': `${imgClassName} ${getAlignmentClassName(align)}`,
       src: src,
-      alt: alt,
+      alt: alt || ' ',
       align: align,
       width: widthValue,
       border: '0',

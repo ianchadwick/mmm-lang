@@ -71,7 +71,7 @@ describe('transform the fonts to their long forms with fall backs', () => {
 
     const result = `
       <html>
-        <head><style><!--[if mso]>.font-fallback-source-sans-pro{font-family:Helvetica,sans-serif!important}<![endif]--></style></head>
+        <head><!--[if mso]><style>.font-fallback-source-sans-pro{font-family:Helvetica,sans-serif!important}</style><![endif]--></head>
         <body>
           <h1 style="font-family:'Source Sans Pro',Helvetica,sans-serif" class="font-fallback-source-sans-pro">
             Create emails that are<br>

@@ -14,6 +14,13 @@ export const render = ({ children, lang }) => {
     <!--[if !mso]><!--><meta http-equiv="X-UA-Compatible" content="IE=edge" /><!--<![endif]-->
     <meta name="viewport" content="width=device-width" />
     {{children}}
+    <!-- Fix image rendering in Outlook -->
+    <!--[if gte mso 9]><xml>
+      <o:OfficeDocumentSettings>
+        <o:AllowPNG/>
+        <o:PixelsPerInch>96</o:PixelsPerInch>
+       </o:OfficeDocumentSettings>
+    </xml><![endif]-->  
   </head>`;
 };
 

@@ -40,10 +40,4 @@ column.tag = 'mmm-column';
 // Any children
 column.allowedChildren = [];
 
-// expose attributes
-column.exposeAttributes = [
-  'padding',
-  'width',
-];
-
 export default column;
